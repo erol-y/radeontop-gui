@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="rdt-gui" />
+		<Option platforms="Unix;" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option platforms="Unix;" />
+				<Option output="bin/Debug/rdt-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add option="-ffunction-sections -fdata-sections" />
+					<Add option="`pkg-config --cflags pciaccess`" />
+					<Add option="`pkg-config --cflags libdrm`" />
+					<Add option="-DENABLE_AMDGPU=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-Wl,-gc-sections" />
+					<Add option="`pkg-config --libs pciaccess`" />
+					<Add option="`pkg-config --libs libdrm`" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/rdt-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-ffunction-sections -fdata-sections" />
+					<Add option="`pkg-config --cflags pciaccess`" />
+					<Add option="`pkg-config --cflags libdrm`" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-Wl,-gc-sections" />
+					<Add option="`pkg-config --libs pciaccess`" />
+					<Add option="`pkg-config --libs libdrm`" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="`wx-config --cflags`" />
+			<Add option="-Wall" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+		</Linker>
+		<Unit filename="GUIFrame.cpp" />
+		<Unit filename="GUIFrame.h" />
+		<Unit filename="WxWizFrame.fbp" />
+		<Unit filename="auth.cpp" />
+		<Unit filename="detect.cpp" />
+		<Unit filename="family_str.cpp" />
+		<Unit filename="r600_pci_ids.h" />
+		<Unit filename="radeontop.cpp" />
+		<Unit filename="radeontop.h" />
+		<Unit filename="rdt_guiApp.cpp" />
+		<Unit filename="rdt_guiApp.h" />
+		<Unit filename="rdt_guiMain.cpp" />
+		<Unit filename="rdt_guiMain.h" />
+		<Unit filename="ticks.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
