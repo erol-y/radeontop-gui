@@ -2,25 +2,18 @@
 # This is Linux-specific software, so we can depend on GNU make.
 
 # Options:
-#	nls	enable translations, default on
-#	debug	enable debug symbols, default off
-#	nostrip	disable stripping, default off
-#	plain	apply neither -g nor -s.
-#	xcb	enable libxcb to run unprivileged in Xorg, default on
 #	amdgpu	enable amdgpu VRAM size and usage reporting, default off
 #		because amdgpu requires libdrm >= 2.4.63
-
-ifndef CXX
-  CXX = g++
-endif
+#   (*) 30 Sep 2017 For default, amdgpu is on
 
 PREFIX ?= /usr
 INSTALL ?= install
 LIBDIR ?= lib
 
-amdgpu ?= 0
+debug ?= 0
+amdgpu ?= 1
 
-bin = rdt-gui
+bin = radeontop-gui
 src = $(filter-out ,$(wildcard *.cpp))
 obj = $(src:.c=.o)
 verh = version.h
@@ -34,21 +27,25 @@ CFLAGS += -Iinclude
 CFLAGS += $(CFLAGS_SECTIONED)
 CFLAGS += $(shell pkg-config --cflags pciaccess)
 CFLAGS += $(shell pkg-config --cflags libdrm)
-CFLAGS += `wx-config --cflags`
+
+ifeq ($(debug), 1)
+  CFLAGS += `wx-config --debug=yes --cflags`
+else
+  CFLAGS += `wx-config --cflags`
+endif
 
 ifeq ($(amdgpu), 1)
 	CFLAGS += -DENABLE_AMDGPU=1
 endif
 
-BASEDIR = bin
-ifdef debug
-	OUTDIR = Debug
+ifeq ($(debug), 1)
+	OUTDIR = bin/Debug
 else
-	OUTDIR = Release
+	OUTDIR = bin/Release
 endif
 
 ifndef plain
-ifdef debug
+ifeq ($(debug), 1)
 	CFLAGS += -g
 else ifndef nostrip
 	CFLAGS += -s
@@ -70,7 +67,7 @@ $(obj): $(wildcard *.h) $(verh)
 $(bin): $(OUTDIR)
 
 $(bin): $(obj)
-	$(CXX) -o $(BASEDIR)/$(OUTDIR)/$(bin) $(obj) $(CFLAGS) $(LDFLAGS) $(LIBS)
+	$(CXX) -o $(OUTDIR)/$(bin) $(obj) $(CFLAGS) $(LDFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o $(bin) $(xcblib)
@@ -83,11 +80,10 @@ $(verh): .git
 .outbin:
 
 $(OUTDIR): .outbin
-	mkdir $(BASEDIR)
-	mkdir $(BASEDIR)/$(OUTDIR)
+	mkdir -p $(OUTDIR)
 
 install: all
-	$(INSTALL) -D -m755 $(bin) $(DESTDIR)/$(PREFIX)/sbin/$(bin)
+	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(bin)
 
 
 dist: ver = $(shell git describe)
