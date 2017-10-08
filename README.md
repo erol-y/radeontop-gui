@@ -30,4 +30,4 @@ Graphical User Interface
 ========================
 
 GUI contains wxWidgets libraries.
-Code::Blocks and wxFormBuilder are used to prepare the project.
+Code::Blocks and wxFormBuilder are used to build the project.

@@ -1,3 +1,7 @@
 You will need DRM, pciaccess and wxwidgets libraries to compile the project.
 Code::Blocks and wxFormBuilder project files are included.
 Also, you can use "make" to build.
+
+"make" has two arguments; debug (default off) and amdgpu (default on).
+example:
+"./make" --> equals to "./make debug=0 amdgpu=1"
