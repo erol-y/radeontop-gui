@@ -25,6 +25,9 @@
 #include <wx/sizer.h>
 #include <wx/timer.h>
 #include <wx/frame.h>
+#include <wx/choice.h>
+#include <wx/textctrl.h>
+#include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -59,6 +62,7 @@ class GUIFrame : public wxFrame
 		wxMenuItem* mviewstats_cr;
 		wxMenuItem* mviewstats_vram;
 		wxMenuItem* mviewstats_gtt;
+		wxMenuItem* mviewQuery;
 		wxMenu* helpMenu;
 		wxStatusBar* statusBar;
 		wxBoxSizer* bSizer1;
@@ -116,6 +120,7 @@ class GUIFrame : public wxFrame
 		virtual void OnViewStats_cr( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_vram( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_gtt( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnQuery( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateVal( wxTimerEvent& event ) { event.Skip(); }
 		
@@ -125,6 +130,31 @@ class GUIFrame : public wxFrame
 		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("radeontop GUI"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 470,325 ), long style = wxDEFAULT_FRAME_STYLE|wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
 		
 		~GUIFrame();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class QueryDialog
+///////////////////////////////////////////////////////////////////////////////
+class QueryDialog : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxBoxSizer* bSizer2;
+		wxChoice* QchoiceRadeon;
+		wxChoice* QchoiceAMD;
+		wxTextCtrl* QtextCtrl1;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnQueryClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnQChoice( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		QueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Query"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 457,363 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		~QueryDialog();
 	
 };
 

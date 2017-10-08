@@ -24,11 +24,10 @@
 rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
-#if wxUSE_STATUSBAR
-    statusBar->SetStatusText(_(""), 0);
-    statusBar->SetStatusText("", 1);
-#endif
-
+    rdt = NULL;
+    qd = NULL;
+    msec = -1;
+    memset(&m_drm_ver, 0, sizeof(m_drm_ver));
     Sizer1Size = bSizer1->GetSize();
 }
 
@@ -54,17 +53,20 @@ void rdt_guiFrame::SetMenuPresent()
 void rdt_guiFrame::OnClose(wxCloseEvent &event)
 {
     Destroy();
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::OnQuit(wxCommandEvent &event)
 {
     Destroy();
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::OnAbout(wxCommandEvent &event)
 {
     wxString msg = wxT("Radeontop GUI");
     wxMessageBox(msg, _("Welcome to..."));
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::OnSize(wxSizeEvent& event)
@@ -140,7 +142,7 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
         float cr;
         _ShowVal(cr, m_staticText_cr, m_gauge_cr, wxT("Clip Rectangle"))
     }
-#undef _ShowVal()
+#undef _ShowVal
 
     m_staticText_vram->SetLabel(wxString::Format("VRAM  Total: %dM   /   Used: %dM",
                                              (int)(rdt->vramsize / 1024 / 1024),
@@ -274,9 +276,151 @@ void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
     _OnViewSelect(m_staticText_gtt, m_gauge_gtt)
     event.Skip();
 }
-#undef _OnViewSelect()
+#undef _OnViewSelect
+
+void rdt_guiFrame::OnQuery(wxCommandEvent& event)
+{
+    this->fShowQuery(event.IsChecked());
+    event.Skip();
+}
+
+void rdt_guiFrame::fShowQuery(bool b)
+{
+    if(b && qd == NULL)
+    {
+        qd = new QDialog(this);
+        qd->Show();
+    }
+    else if(!b && qd != NULL)
+    {
+        qd->Show(false);
+        delete qd;
+        qd = NULL;
+        this->mviewQuery->Check(false);
+    }
+}
+
+QDialog::QDialog(wxWindow * parent)
+    : QueryDialog(parent)
+{
+    rdtFrame = (rdt_guiFrame *) parent;
+    wxLog::SetActiveTarget(new wxLogTextCtrl(QtextCtrl1));
+
+    wxLogMessage("Version (%u.%u.%u),   Driver: %s\n",
+                 rdtFrame->m_drm_ver.version_major,
+                 rdtFrame->m_drm_ver.version_minor,
+                 rdtFrame->m_drm_ver.version_patchlevel,
+                 rdtFrame->rdt->get_drm_name());
+
+    if(rdtFrame->rdt != NULL && !rdtFrame->rdt->haserror())
+    {
 
 
+        if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
+        {
+            QchoiceAMD->Hide();
+            bSizer2->Remove((wxSizer*) QchoiceAMD);
+        }
+        else if(strcmp(rdtFrame->rdt->get_drm_name(), "amdgpu") == 0)
+        {
+            QchoiceRadeon->Hide();
+        }
+    }
+    else
+    {
+        QchoiceAMD->Hide();
+        QchoiceRadeon->Enable(false);
+    }
+}
 
+QDialog::~QDialog()
+{
+
+}
+
+void QDialog::OnQueryClose(wxCloseEvent& event)
+{
+    rdtFrame->fShowQuery(false);
+    wxUnusedVar(event);
+}
+
+void QDialog::OnQChoice(wxCommandEvent& event)
+{
+    if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
+    {
+        unsigned long val = 0;
+
+        switch(QchoiceRadeon->GetSelection())
+        {
+        case 1: //CLOCK_CRYSTAL_FREQ
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
+                {
+                    wxLogMessage("Crystal Frequency: %u", (unsigned)val);
+                }
+                //else Error message
+                break;
+            }
+        case 2: //NUM_TILE_PIPES
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_NUM_TILE_PIPES, &val))
+                    wxLogMessage("Tile Pipes count: %u", (unsigned)val);
+                //else
+                break;
+            }
+        case 3: //RADEON_INFO_MAX_SE
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SE, &val))
+                    wxLogMessage("Number of Shader Engines: %u", (unsigned)val);
+                //else
+                break;
+            }
+        case 4: //MAX_SH_PER_SE
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SH_PER_SE, &val))
+                    wxLogMessage("Number of shaders per engine: %u", (unsigned)val);
+
+                break;
+            }
+        case 5: //MAX_SCLK
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
+                    wxLogMessage("Maximum source clock: %u", (unsigned)val);
+
+                break;
+            }
+        case 6: //VCE_FW_VERSION
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_VCE_FW_VERSION, &val))
+                    wxLogMessage("VCE firmware version: %u", (unsigned)val);
+
+                break;
+            }
+        case 7: //VCE_FB_VERSION
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_VCE_FB_VERSION, &val))
+                    wxLogMessage("VCE FB Version: %u", (unsigned)val);
+
+                break;
+            }
+        case 8: //ACTIVE_CU_COUNT
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_ACTIVE_CU_COUNT, &val))
+                    wxLogMessage("Active Compute Unit count: %u", (unsigned)val);
+
+                break;
+            }
+        case 9: //CURRENT_GPU_TEMP
+            {
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &val))
+                    wxLogMessage("GPU Temperature: %u", (unsigned)val);
+
+                break;
+            }
+        default:
+            break;
+        }
+    }
+}
 
 

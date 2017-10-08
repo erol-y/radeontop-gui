@@ -21,7 +21,7 @@ namespace radeontop {
 
 rdtop::rdtop()
 {
-    //bits = 0;
+    bits = {};
     vramsize = 0;
     gttsize = 0;
     use_ioctl = 0;
@@ -36,7 +36,7 @@ rdtop::~rdtop()
 
 }
 
-bool rdtop::haserror()
+bool rdtop::haserror() const
 {
     return m_err;
 }
@@ -93,6 +93,11 @@ unsigned int rdtop::readgrbm()
 const char * const rdtop::get_family_name()
 {
     return family_str[family];
+}
+
+void rdtop::get_drm_version(struct _m_drm_version * drm_ver)
+{
+    memcpy(drm_ver, &m_drm_version, sizeof(m_drm_version));
 }
 
 }

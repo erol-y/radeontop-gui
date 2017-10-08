@@ -28,13 +28,14 @@ bool rdt_guiApp::OnInit()
     frame->Show();
 
     rdt = new radeontop::rdtop();
+    frame->rdt = rdt;
     if(!rdt->init_rdtop())
     {
         frame->SetStatusText(_T("Radeontop not initialized!"), 0);
         return true;
     }
 
-    frame->rdt = rdt;
+    rdt->get_drm_version(&frame->m_drm_ver);
     frame->SetMenuPresent();
     frame->mSetTimerVal(500, true);
 

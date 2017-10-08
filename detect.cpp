@@ -28,7 +28,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
     int ret = pci_system_init();
     if(ret)
     {
-        rdtop::m_err = true;
+        this->m_err = true;
         return 0;
     }
     std::cout << "pci_system_init: " << ret << std::endl;
@@ -125,6 +125,12 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 			drmFreeVersion(ver);
 			goto out;
 		}
+
+		strcpy(drm_name, ver->name);
+        m_drm_version.version_major = ver->version_major;
+        m_drm_version.version_minor = ver->version_minor;
+        m_drm_version.version_patchlevel = ver->version_patchlevel;
+
 		drmFreeVersion(ver);
 
 		// No version indicator, so we need to test once
@@ -311,6 +317,23 @@ unsigned int rdtop::get_mclk()
 	if (ret) return 0;
 
 	return val;
+}
+
+int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
+{
+    int ret = -1;
+    struct drm_radeon_info info;
+    memset(&info, 0, sizeof(info));
+
+    info.value = (unsigned long)data;
+    info.request = CommandIndex;
+
+    ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
+
+    printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
+
+    return ret;
+
 }
 
 void rdtop::initbits(int fam)

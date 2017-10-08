@@ -74,6 +74,12 @@ struct bits_t {
 	unsigned int mclk;
 };
 
+struct _m_drm_version
+{
+    int version_major;
+    int version_minor;
+    int version_patchlevel;
+};
 
 class rdtop
 {
@@ -82,16 +88,19 @@ class rdtop
         unsigned long long vramsize;
         unsigned long long gttsize;
 
-        bool haserror();
+        bool haserror() const;
         bool init_rdtop();
         int get_ticks() const {return ticks;}
         struct bits_t get_bits() const {return bits;}
+        const char * get_drm_name() const {return drm_name;}
+        void get_drm_version(struct _m_drm_version *);
         const char * const get_family_name();
         unsigned int readgrbm();
         unsigned long long getvram();
         unsigned long long getgtt();
         unsigned int get_sclk();
         unsigned int get_mclk();
+        int GetQueryR(unsigned long, void *);
 
         rdtop();
         ~rdtop();
@@ -99,6 +108,7 @@ class rdtop
     private:
         bool m_err;
         struct bits_t bits;
+        struct _m_drm_version m_drm_version;
 
         //detect.cpp
         unsigned int init_pci(unsigned char, const unsigned char);
@@ -110,7 +120,7 @@ class rdtop
 
         //radeon.cpp
         int get_drm_value(int, unsigned, uint32_t *);
-        unsigned int readgrbm2();
+        //unsigned int readgrbm2();
         unsigned int ticks;
         const void * area;
         int family;
@@ -124,8 +134,6 @@ class rdtop
         static void * collector(void *);
 
 };
-
-// bits
 
 // chips
 enum radeon_family {

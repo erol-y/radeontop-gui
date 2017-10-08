@@ -25,7 +25,7 @@ class rdt_guiApp : public wxApp
 {
     protected:
         class rdt_guiFrame * frame;
-        radeontop::rdtop * rdt;
+        class radeontop::rdtop * rdt;
 
 
     public:

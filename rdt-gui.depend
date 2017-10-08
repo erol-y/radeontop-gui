@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1506039323 source:/home/ubuntu/code/rdt-gui-v1/GUIFrame.cpp
+1507433463 source:/home/ubuntu/code/rdt-gui-v1/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
@@ -1641,7 +1641,7 @@
 1491890964 /usr/include/wx-3.0/wx/gtk/mdi.h
 	"wx/frame.h"
 
-1506039323 /home/ubuntu/code/rdt-gui-v1/GUIFrame.h
+1507352504 /home/ubuntu/code/rdt-gui-v1/GUIFrame.h
 	<wx/artprov.h>
 	<wx/xrc/xmlres.h>
 	<wx/string.h>
@@ -1659,23 +1659,27 @@
 	<wx/sizer.h>
 	<wx/timer.h>
 	<wx/frame.h>
+	<wx/choice.h>
+	<wx/textctrl.h>
+	<wx/dialog.h>
 
-1506042319 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiMain.cpp
+1507434163 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiMain.cpp
 	"wx_pch.h"
 	"rdt_guiMain.h"
 
-1506042380 /home/ubuntu/code/rdt-gui-v1/rdt_guiMain.h
+1507431527 /home/ubuntu/code/rdt-gui-v1/rdt_guiMain.h
 	"rdt_guiApp.h"
 	"GUIFrame.h"
 	"wx/msgdlg.h"
+	"wx/log.h"
 	"radeontop.h"
 
-1505514778 /home/ubuntu/code/rdt-gui-v1/rdt_guiApp.h
+1507354944 /home/ubuntu/code/rdt-gui-v1/rdt_guiApp.h
 	<wx/app.h>
 	"rdt_guiMain.h"
 	"radeontop.h"
 
-1506042757 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiApp.cpp
+1507431760 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiApp.cpp
 	"wx_pch.h"
 	"rdt_guiApp.h"
 
@@ -3411,7 +3415,7 @@
 1493729365 /usr/include/wx-3.0-unofficial/wx/generic/imaglist.h
 	"wx/list.h"
 
-1506034328 /home/ubuntu/code/rdt-gui-v1/radeontop.h
+1507430900 /home/ubuntu/code/rdt-gui-v1/radeontop.h
 	<iostream>
 	<stdio.h>
 	<sys/mman.h>
@@ -3476,7 +3480,7 @@
 1504815478 source:/home/ubuntu/code/rdt-gui-v1/auth.cpp
 	"radeontop.h"
 
-1505707236 source:/home/ubuntu/code/rdt-gui-v1/detect.cpp
+1507434279 source:/home/ubuntu/code/rdt-gui-v1/detect.cpp
 	"radeontop.h"
 	<pciaccess.h>
 	<dirent.h>
@@ -3485,7 +3489,7 @@
 1504899818 source:/home/ubuntu/code/rdt-gui-v1/family_str.cpp
 	"radeontop.h"
 
-1506040696 source:/home/ubuntu/code/rdt-gui-v1/radeontop.cpp
+1507432925 source:/home/ubuntu/code/rdt-gui-v1/radeontop.cpp
 	"radeontop.h"
 
 1505616997 source:/home/ubuntu/code/rdt-gui-v1/ticks.cpp
@@ -3507,4 +3511,7 @@
 
 1490863270 /usr/include/libdrm/amdgpu_drm.h
 	"drm.h"
+
+1507261173 source:/home/ubuntu/code/rdt-gui-v1/query.cpp
+	"rdt_guiMain.h"
 

@@ -89,6 +89,9 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	viewmenu->Append( menuview_statsItem );
 	
+	mviewQuery = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("Query") ) , wxEmptyString, wxITEM_CHECK );
+	viewmenu->Append( mviewQuery );
+	
 	mbar->Append( viewmenu, wxT("&view") ); 
 	
 	helpMenu = new wxMenu();
@@ -300,6 +303,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( mviewstats_cr->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_cr ) );
 	this->Connect( mviewstats_vram->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vram ) );
 	this->Connect( mviewstats_gtt->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gtt ) );
+	this->Connect( mviewQuery->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuery ) );
 	this->Connect( menuHelpAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( GUIFrame::UpdateVal ) );
 }
@@ -326,7 +330,47 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_cr ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vram ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gtt ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuery ) );
 	this->Disconnect( idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( GUIFrame::UpdateVal ) );
+	
+}
+
+QueryDialog::QueryDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+	
+	wxString QchoiceRadeonChoices[] = { wxEmptyString, wxT("CLOCK_CRYSTAL_FREQ"), wxT("NUM_TILE_PIPES"), wxT("MAX_SE"), wxT("MAX_SH_PER_SE"), wxT("MAX_SCLK"), wxT("VCE_FW_VERSION"), wxT("VCE_FB_VERSION"), wxT("ACTIVE_CU_COUNT"), wxT("CURRENT_GPU_TEMP"), wxEmptyString };
+	int QchoiceRadeonNChoices = sizeof( QchoiceRadeonChoices ) / sizeof( wxString );
+	QchoiceRadeon = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, QchoiceRadeonNChoices, QchoiceRadeonChoices, 0 );
+	QchoiceRadeon->SetSelection( 0 );
+	bSizer2->Add( QchoiceRadeon, 0, wxALL, 5 );
+	
+	wxArrayString QchoiceAMDChoices;
+	QchoiceAMD = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, QchoiceAMDChoices, 0 );
+	QchoiceAMD->SetSelection( 0 );
+	bSizer2->Add( QchoiceAMD, 0, wxALL, 5 );
+	
+	QtextCtrl1 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	bSizer2->Add( QtextCtrl1, 1, wxALL|wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizer2 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( QueryDialog::OnQueryClose ) );
+	QchoiceRadeon->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoice ), NULL, this );
+}
+
+QueryDialog::~QueryDialog()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( QueryDialog::OnQueryClose ) );
+	QchoiceRadeon->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoice ), NULL, this );
 	
 }

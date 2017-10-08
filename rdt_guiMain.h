@@ -22,22 +22,28 @@
 
 #include "GUIFrame.h"
 #include "wx/msgdlg.h"
+#include "wx/log.h"
 #include "radeontop.h"
 
 class rdt_guiFrame: public GUIFrame
 {
     public:
-        radeontop::rdtop * rdt;
+        class radeontop::rdtop * rdt;
+        radeontop::_m_drm_version m_drm_ver;
 
         void mSetTimerVal(int, bool);
         void SetMenuPresent();
+        void fShowQuery(bool);
 
         rdt_guiFrame(wxFrame *frame);
         ~rdt_guiFrame();
 
     private:
         int msec;
+        bool is_radeontop_ok;
         wxSize Sizer1Size;
+
+        class QDialog * qd;
 
         virtual void OnClose(wxCloseEvent& event);
         virtual void OnQuit(wxCommandEvent& event);
@@ -62,6 +68,22 @@ class rdt_guiFrame: public GUIFrame
         virtual void OnViewStats_cr(wxCommandEvent& event);
         virtual void OnViewStats_vram(wxCommandEvent& event);
         virtual void OnViewStats_gtt(wxCommandEvent& event);
+
+        virtual void OnQuery(wxCommandEvent& event);
 };
 
+class QDialog: public QueryDialog
+{
+    public:
+        QDialog(wxWindow *);
+        ~QDialog();
+
+    private:
+        rdt_guiFrame * rdtFrame;
+        //int QueryMap[32];
+
+    protected:
+        virtual void OnQueryClose(wxCloseEvent& event);
+        virtual void OnQChoice(wxCommandEvent& event);
+};
 #endif // RDT_GUIMAIN_H
