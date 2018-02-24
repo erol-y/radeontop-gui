@@ -83,6 +83,8 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
 	if (drm_fd < 0 && access("/dev/ati/card0", F_OK) == 0) // fglrx path
 		drm_fd = open("/dev/ati/card0", O_RDWR);
+	else if (drm_fd < 0 && access("/dev/dri/card0", F_OK) == 0)
+        drm_fd = open("/dev/dri/card0", O_RDWR);
 
 	use_ioctl = 0;
 	if (drm_fd >= 0) {
