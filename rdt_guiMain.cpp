@@ -148,17 +148,17 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
                                              (int)(rdt->vramsize / 1024 / 1024),
                                              (int)(radeontop::results->vram / 1024 / 1024)));
 
-    m_gauge_vram->SetRange(rdt->vramsize);
+    m_gauge_vram->SetRange(rdt->vramsize / 1024 / 1024);
     m_gauge_vram->SetValue((int)(radeontop::results->vram > rdt->vramsize) ?
-                                rdt->vramsize : radeontop::results->vram);
+                                rdt->vramsize : radeontop::results->vram / 1024 / 1024);
 
     m_staticText_gtt->SetLabel(wxString::Format("GTT  Total: %dM   /   Used: %dM",
                                                 (int)(rdt->gttsize / 1024 / 1024),
                                                 (int)(radeontop::results->gtt / 1024 / 1024)));
 
-    m_gauge_gtt->SetRange(rdt->gttsize);
-    m_gauge_gtt->SetValue((int)(radeontop::results->gtt > rdt->gttsize) ?
-                          rdt->gttsize : radeontop::results->gtt);
+    m_gauge_gtt->SetRange((int) (rdt->gttsize / 1024 / 1024));
+    m_gauge_gtt->SetValue((unsigned int)(radeontop::results->gtt > rdt->gttsize) ?
+                          rdt->gttsize : (radeontop::results->gtt / 1024 / 1024));
 
 
     statusBar->SetStatusText(wxString::Format("core: %dMhz / vmem: %dMhz",
@@ -356,7 +356,7 @@ void QDialog::OnQChoice(wxCommandEvent& event)
             {
                 if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
                 {
-                    wxLogMessage("Crystal Frequency: %u", (unsigned)val);
+                    wxLogMessage("Crystal Frequency: %u Hz (%u kHz)", (unsigned)val, unsigned (val/1000));
                 }
                 //else Error message
                 break;
@@ -385,7 +385,7 @@ void QDialog::OnQChoice(wxCommandEvent& event)
         case 5: //MAX_SCLK
             {
                 if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
-                    wxLogMessage("Maximum source clock: %u", (unsigned)val);
+                    wxLogMessage("Maximum source clock: %u kHz (%u mHz)", (unsigned)val, unsigned(val/1000));
 
                 break;
             }
