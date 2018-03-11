@@ -6,7 +6,7 @@ radeontop-gui (1.2) trusty; urgency=medium
 
 radeontop-gui (1.1) trusty; urgency=medium
 
-  * Simple cpu frequency window.
+  * GPU info query window
 
  -- Erol Yesilyurt <erolyslyrt@gmail.com>  Sun, 8 Oct 2017 00:50:15 +0300
 
