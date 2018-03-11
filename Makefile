@@ -15,7 +15,7 @@ amdgpu ?= 1
 
 bin = radeontop-gui
 binstall = radeontop-gui.v1
-scrpt = radeontop-gui.sh
+scrpt = radeontop-gui
 src = $(filter-out ,$(wildcard *.cpp))
 obj = $(src:.c=.o)
 verh = version.h
