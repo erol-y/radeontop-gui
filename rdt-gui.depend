@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1518730877 source:/home/ubuntu/code/rdt-gui-v1/GUIFrame.cpp
+1520729391 source:/home/ubuntu/code/rdt-gui-v1/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
@@ -1642,7 +1642,7 @@
 1506631596 /usr/include/wx-3.0/wx/gtk/mdi.h
 	"wx/frame.h"
 
-1518730877 /home/ubuntu/code/rdt-gui-v1/GUIFrame.h
+1520729391 /home/ubuntu/code/rdt-gui-v1/GUIFrame.h
 	<wx/artprov.h>
 	<wx/xrc/xmlres.h>
 	<wx/string.h>
@@ -1663,17 +1663,21 @@
 	<wx/choice.h>
 	<wx/textctrl.h>
 	<wx/dialog.h>
+	<wx/scrolbar.h>
 
-1518906860 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiMain.cpp
+1520442186 source:/home/ubuntu/code/rdt-gui-v1/rdt_guiMain.cpp
 	"wx_pch.h"
 	"rdt_guiMain.h"
 
-1507431527 /home/ubuntu/code/rdt-gui-v1/rdt_guiMain.h
+1520383122 /home/ubuntu/code/rdt-gui-v1/rdt_guiMain.h
+	<iostream>
+	<map>
 	"rdt_guiApp.h"
 	"GUIFrame.h"
 	"wx/msgdlg.h"
 	"wx/log.h"
 	"radeontop.h"
+	"cputop.h"
 
 1507354944 /home/ubuntu/code/rdt-gui-v1/rdt_guiApp.h
 	<wx/app.h>
@@ -3481,7 +3485,7 @@
 1507447638 source:/home/ubuntu/code/rdt-gui-v1/auth.cpp
 	"radeontop.h"
 
-1507448949 source:/home/ubuntu/code/rdt-gui-v1/detect.cpp
+1519439595 source:/home/ubuntu/code/rdt-gui-v1/detect.cpp
 	"radeontop.h"
 	<pciaccess.h>
 	<dirent.h>
@@ -3515,4 +3519,11 @@
 
 1507261173 source:/home/ubuntu/code/rdt-gui-v1/query.cpp
 	"rdt_guiMain.h"
+
+1520451569 /home/ubuntu/code/rdt-gui-v1/cputop.h
+	<iostream>
+	<cpufreq.h>
+
+1520380798 source:/home/ubuntu/code/rdt-gui-v1/cputop.cpp
+	"cputop.h"
 

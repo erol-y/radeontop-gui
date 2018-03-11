@@ -1,3 +1,9 @@
+radeontop-gui (1.2) trusty; urgency=medium
+
+  * Simple cpu frequency window.
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com> Sun, 11 Mar 2018 01:19:00 +0300
+
 radeontop-gui (1.0) trusty; urgency=medium
 
   * Initial Release.

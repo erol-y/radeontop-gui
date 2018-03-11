@@ -1,4 +1,4 @@
-You will need DRM, pciaccess and wxwidgets libraries to compile the project.
+You will need DRM, pciaccess, cpufreq and wxwidgets libraries to compile the project.
 Code::Blocks and wxFormBuilder project files are included.
 Also, you can use "make" to build.
 

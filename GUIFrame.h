@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jul 17 2017)
+// C++ code generated with wxFormBuilder (version Feb 14 2018)
 // http://www.wxformbuilder.org/
 //
-// PLEASE DO "NOT" EDIT THIS FILE!
+// PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
 #ifndef __GUIFRAME_H__
@@ -63,6 +63,7 @@ class GUIFrame : public wxFrame
 		wxMenuItem* mviewstats_vram;
 		wxMenuItem* mviewstats_gtt;
 		wxMenuItem* mviewQuery;
+		wxMenuItem* mviewCPU;
 		wxMenu* helpMenu;
 		wxStatusBar* statusBar;
 		wxBoxSizer* bSizer1;
@@ -121,6 +122,7 @@ class GUIFrame : public wxFrame
 		virtual void OnViewStats_vram( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_gtt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnQuery( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCpuQuery( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateVal( wxTimerEvent& event ) { event.Skip(); }
 		
@@ -155,6 +157,29 @@ class QueryDialog : public wxDialog
 		
 		QueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Query"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 457,363 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~QueryDialog();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class CpuQueryDialog
+///////////////////////////////////////////////////////////////////////////////
+class CpuQueryDialog : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxBoxSizer* CpuSizer;
+		wxTimer timer_cpu;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnCpuDialogClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void UpdateCpuVal( wxTimerEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 423,311 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		~CpuQueryDialog();
 	
 };
 

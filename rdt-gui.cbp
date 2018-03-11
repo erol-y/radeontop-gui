@@ -26,6 +26,7 @@
 					<Add option="-Wl,-gc-sections" />
 					<Add option="`pkg-config --libs pciaccess`" />
 					<Add option="`pkg-config --libs libdrm`" />
+					<Add option="-lcpufreq" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -45,6 +46,7 @@
 					<Add option="-Wl,-gc-sections" />
 					<Add option="`pkg-config --libs pciaccess`" />
 					<Add option="`pkg-config --libs libdrm`" />
+					<Add option="-lcpufreq" />
 				</Linker>
 			</Target>
 		</Build>
@@ -59,6 +61,8 @@
 		<Unit filename="GUIFrame.h" />
 		<Unit filename="WxWizFrame.fbp" />
 		<Unit filename="auth.cpp" />
+		<Unit filename="cputop.cpp" />
+		<Unit filename="cputop.h" />
 		<Unit filename="detect.cpp" />
 		<Unit filename="family_str.cpp" />
 		<Unit filename="r600_pci_ids.h" />

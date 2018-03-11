@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jul 17 2017)
+// C++ code generated with wxFormBuilder (version Feb 14 2018)
 // http://www.wxformbuilder.org/
 //
-// PLEASE DO "NOT" EDIT THIS FILE!
+// PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
 #include "wx/wxprec.h"
@@ -91,6 +91,9 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	mviewQuery = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("Query") ) , wxEmptyString, wxITEM_CHECK );
 	viewmenu->Append( mviewQuery );
+	
+	mviewCPU = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("CPU") ) , wxEmptyString, wxITEM_CHECK );
+	viewmenu->Append( mviewCPU );
 	
 	mbar->Append( viewmenu, wxT("&view") ); 
 	
@@ -304,6 +307,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( mviewstats_vram->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vram ) );
 	this->Connect( mviewstats_gtt->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gtt ) );
 	this->Connect( mviewQuery->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuery ) );
+	this->Connect( mviewCPU->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnCpuQuery ) );
 	this->Connect( menuHelpAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( GUIFrame::UpdateVal ) );
 }
@@ -331,6 +335,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vram ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gtt ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuery ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnCpuQuery ) );
 	this->Disconnect( idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( GUIFrame::UpdateVal ) );
 	
@@ -342,7 +347,7 @@ QueryDialog::QueryDialog( wxWindow* parent, wxWindowID id, const wxString& title
 	
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 	
-	wxString QchoiceRadeonChoices[] = { wxEmptyString, wxT("CLOCK_CRYSTAL_FREQ"), wxT("NUM_TILE_PIPES"), wxT("MAX_SE"), wxT("MAX_SH_PER_SE"), wxT("MAX_SCLK"), wxT("VCE_FW_VERSION"), wxT("VCE_FB_VERSION"), wxT("ACTIVE_CU_COUNT"), wxT("CURRENT_GPU_TEMP"), wxEmptyString };
+	wxString QchoiceRadeonChoices[] = { wxEmptyString, wxT("CLOCK_CRYSTAL_FREQ"), wxT("NUM_TILE_PIPES"), wxT("MAX_SE"), wxT("MAX_SH_PER_SE"), wxT("MAX_SCLK"), wxT("VCE_FW_VERSION"), wxT("VCE_FB_VERSION"), wxT("ACTIVE_CU_COUNT"), wxT("CURRENT_GPU_TEMP") };
 	int QchoiceRadeonNChoices = sizeof( QchoiceRadeonChoices ) / sizeof( wxString );
 	QchoiceRadeon = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, QchoiceRadeonNChoices, QchoiceRadeonChoices, 0 );
 	QchoiceRadeon->SetSelection( 0 );
@@ -372,5 +377,33 @@ QueryDialog::~QueryDialog()
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( QueryDialog::OnQueryClose ) );
 	QchoiceRadeon->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoice ), NULL, this );
+	
+}
+
+CpuQueryDialog::CpuQueryDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	CpuSizer = new wxBoxSizer( wxVERTICAL );
+	
+	
+	this->SetSizer( CpuSizer );
+	this->Layout();
+	timer_cpu.SetOwner( this, wxID_ANY );
+	timer_cpu.Start( 750 );
+	
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CpuQueryDialog::OnCpuDialogClose ) );
+	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( CpuQueryDialog::UpdateCpuVal ) );
+}
+
+CpuQueryDialog::~CpuQueryDialog()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CpuQueryDialog::OnCpuDialogClose ) );
+	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( CpuQueryDialog::UpdateCpuVal ) );
 	
 }

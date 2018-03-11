@@ -278,27 +278,40 @@ void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
 }
 #undef _OnViewSelect
 
-void rdt_guiFrame::OnQuery(wxCommandEvent& event)
+void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
 {
-    this->fShowQuery(event.IsChecked());
-    event.Skip();
-}
-
-void rdt_guiFrame::fShowQuery(bool b)
-{
-    if(b && qd == NULL)
-    {
-        qd = new QDialog(this);
-        qd->Show();
-    }
-    else if(!b && qd != NULL)
+    if(wxid == qd)
     {
         qd->Show(false);
         delete qd;
-        qd = NULL;
+        mviewQuery->Check(false);
+    }
+    else if(wxid == cd)
+    {
+        cd->Show(false);
+        delete cd;
+        mviewCPU->Check(false);
+    }
+
+}
+
+void rdt_guiFrame::OnQuery(wxCommandEvent& event)
+{
+    if(event.IsChecked())
+    {
+        this->qd = new QDialog(this);
+        qd->Show(true);
+    }
+    else if(!event.IsChecked())
+    {
+        qd->Show(false);
+        delete qd;
         this->mviewQuery->Check(false);
     }
+
+    event.Skip();
 }
+
 
 QDialog::QDialog(wxWindow * parent)
     : QueryDialog(parent)
@@ -340,7 +353,7 @@ QDialog::~QDialog()
 
 void QDialog::OnQueryClose(wxCloseEvent& event)
 {
-    rdtFrame->fShowQuery(false);
+    rdtFrame->DestroyDialogWindow(this);
     wxUnusedVar(event);
 }
 
@@ -421,6 +434,100 @@ void QDialog::OnQChoice(wxCommandEvent& event)
             break;
         }
     }
+
+    wxUnusedVar(event);
+}
+
+void rdt_guiFrame::OnCpuQuery(wxCommandEvent& event)
+{
+    if(event.IsChecked())
+    {
+        this->cd = new CpuDialog(this);
+        cd->Show();
+    }
+    else if(!event.IsChecked())
+    {
+        cd->Show(false);
+        delete cd;
+        this->mviewCPU->Check(false);
+    }
+    else
+    {
+        event.Skip();
+    }
+
+}
+
+void CpuDialog::OnCpuDialogClose(wxCloseEvent& event)
+{
+    rdtFrame->DestroyDialogWindow(this);
+     wxUnusedVar(event);
+}
+
+CpuDialog::CpuDialog(wxWindow * parent)
+    :CpuQueryDialog(parent)
+{
+    rdtFrame = (rdt_guiFrame *) parent;
+    cfq = new cputop::cpufreq();
+
+    unsigned char c = cfq->GetCpuCount();
+
+    printf("CpuCount: %d\n", c);
+
+    for(unsigned char i = 0; i < c; ++i)
+    {
+        wxString s(wxString::Format("CPU-%d", i));
+        wxStaticText * st;
+        st = new wxStaticText(this, wxID_ANY, wxT("CPU"));
+        st->SetLabel(s);
+        st->Wrap(-1);
+        CpuSizer->Add(st, 0, wxALL, 5);
+
+        wxGauge * ga;
+        ga = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxSize( -1,15 ), wxGA_HORIZONTAL );
+        ga->SetValue(0);
+        CpuSizer->Add(ga, 0, wxEXPAND|wxRIGHT|wxLEFT, 5 );
+
+        mapCpuWindowElements.insert(std::make_pair(st, ga));
+        mapCPU.insert(std::make_pair(i, mapCpuWindowElements.find(st)));
+    }
+}
+
+CpuDialog::~CpuDialog()
+{
+    delete cfq;
+}
+
+void CpuDialog::UpdateCpuVal(wxTimerEvent& event)
+{
+    std::map<unsigned char, std::map<wxStaticText *, wxGauge *>::iterator>::iterator itr = mapCPU.begin();
+    unsigned char cc = cfq->GetCpuCount();
+    unsigned char i = 0;
+    unsigned long min = 0;
+    unsigned long max = 0;
+
+    for(; i < cc; ++i)
+    {
+        if(!cfq->GetFreqLimits(i, &min, &max))
+        {
+            //Simple debug output.
+            printf("ERROR! GetFreqLimits(cpu = %d)\n", i);
+            break;
+        }
+
+        itr = mapCPU.find(i);
+        if(itr == mapCPU.end())
+        {
+            printf("ERROR! CPU:%d not mapped.\n", i);
+            break;
+        }
+
+        itr->second->first->SetLabel(wxString::Format("CPU-%d \t %.2fGHZ", i, (float)cfq->GetFrequency(i)/1.0e6));
+        itr->second->second->SetRange(max);
+        itr->second->second->SetValue(cfq->GetFrequency(i));
+    }
+
+    wxUnusedVar(event);
 }
 
 

@@ -14,6 +14,8 @@ debug ?= 0
 amdgpu ?= 1
 
 bin = radeontop-gui
+binstall = radeontop-gui.v1
+scrpt = radeontop-gui.sh
 src = $(filter-out ,$(wildcard *.cpp))
 obj = $(src:.c=.o)
 verh = version.h
@@ -44,6 +46,12 @@ else
 	OUTDIR = bin/Release
 endif
 
+ifeq ($(debug), 1)
+	OUTOBJDIR = obj/Debug
+else
+	OUTOBJDIR = obj/Release
+endif
+
 ifndef plain
 ifeq ($(debug), 1)
 	CFLAGS += -g
@@ -56,6 +64,7 @@ LDFLAGS ?= -Wl,-O2
 LDFLAGS += $(LDFLAGS_SECTIONED)
 LIBS += $(shell pkg-config --libs pciaccess)
 LIBS += $(shell pkg-config --libs libdrm)
+LDFLAGS += -lcpufreq
 LDFLAGS +=	`wx-config --libs`
 
 .PHONY: all clean install dist
@@ -80,10 +89,14 @@ $(verh): .git
 .outbin:
 
 $(OUTDIR): .outbin
-	mkdir -p $(OUTDIR)
+	test -d $(OUTDIR) || mkdir -p $(OUTDIR)
+
+$(OUTOBJDIR): .outbin
+	test -d $(OUTOBJDIR) || mkdir -p $(OUTOBJDIR)
 
 install: all
-	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(bin)
+	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
+	$(INSTALL) -D -m755 $(scrpt) $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
 
 
 dist: ver = $(shell git describe)

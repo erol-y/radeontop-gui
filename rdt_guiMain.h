@@ -17,13 +17,15 @@
 #ifndef RDT_GUIMAIN_H
 #define RDT_GUIMAIN_H
 
+#include <iostream>
+#include <map>
 
 #include "rdt_guiApp.h"
-
 #include "GUIFrame.h"
 #include "wx/msgdlg.h"
 #include "wx/log.h"
 #include "radeontop.h"
+#include "cputop.h"
 
 class rdt_guiFrame: public GUIFrame
 {
@@ -33,7 +35,7 @@ class rdt_guiFrame: public GUIFrame
 
         void mSetTimerVal(int, bool);
         void SetMenuPresent();
-        void fShowQuery(bool);
+        void DestroyDialogWindow(wxDialog *);
 
         rdt_guiFrame(wxFrame *frame);
         ~rdt_guiFrame();
@@ -44,6 +46,7 @@ class rdt_guiFrame: public GUIFrame
         wxSize Sizer1Size;
 
         class QDialog * qd;
+        class CpuDialog * cd;
 
         virtual void OnClose(wxCloseEvent& event);
         virtual void OnQuit(wxCommandEvent& event);
@@ -70,6 +73,7 @@ class rdt_guiFrame: public GUIFrame
         virtual void OnViewStats_gtt(wxCommandEvent& event);
 
         virtual void OnQuery(wxCommandEvent& event);
+        virtual void OnCpuQuery(wxCommandEvent& event);
 };
 
 class QDialog: public QueryDialog
@@ -85,5 +89,24 @@ class QDialog: public QueryDialog
     protected:
         virtual void OnQueryClose(wxCloseEvent& event);
         virtual void OnQChoice(wxCommandEvent& event);
+};
+
+class CpuDialog: public CpuQueryDialog
+{
+    public:
+        CpuDialog(wxWindow *);
+        ~CpuDialog();
+
+    private:
+        rdt_guiFrame * rdtFrame;
+        cputop::cpufreq * cfq;
+
+        std::map<wxStaticText *, wxGauge *> mapCpuWindowElements;
+        std::map<unsigned char, std::map<wxStaticText *, wxGauge *>::iterator> mapCPU;
+
+    protected:
+        virtual void OnCpuDialogClose(wxCloseEvent& event);
+        virtual void UpdateCpuVal(wxTimerEvent& event);
+
 };
 #endif // RDT_GUIMAIN_H
