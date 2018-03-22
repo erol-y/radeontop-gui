@@ -505,6 +505,7 @@ void CpuDialog::UpdateCpuVal(wxTimerEvent& event)
     unsigned char i = 0;
     unsigned long min = 0;
     unsigned long max = 0;
+    unsigned long j = 0;
 
     for(; i < cc; ++i)
     {
@@ -522,9 +523,10 @@ void CpuDialog::UpdateCpuVal(wxTimerEvent& event)
             break;
         }
 
-        itr->second->first->SetLabel(wxString::Format("CPU-%d \t %.2fGHZ", i, (float)cfq->GetFrequency(i)/1.0e6));
-        itr->second->second->SetRange(max);
-        itr->second->second->SetValue(cfq->GetFrequency(i));
+        j = cfq->GetFrequency(i);
+        itr->second->first->SetLabel(wxString::Format("CPU-%d \t %.2fGHZ", i, (float)j /1.0e6));
+        itr->second->second->SetRange( j <= max? (max - min): (j - min) ); // Core boost
+        itr->second->second->SetValue( ( j <= min? 0: (j-min) ) );
     }
 
     wxUnusedVar(event);
