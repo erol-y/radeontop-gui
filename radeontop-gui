@@ -4,10 +4,12 @@ xhost +
 
 if [ -f ./radeontop-gui.v1 ]; then
 	sudo ./radeontop-gui.v1
-elseif [ ./bin/Debug/radeontop-gui ]
+
+else if [ -f ./bin/Debug/radeontop-gui ]; then
 	sudo ./bin/Debug/radeontop-gui
 else
 	sudo ./bin/Release/radeontop-gui
+fi
 fi
 
 xhost -

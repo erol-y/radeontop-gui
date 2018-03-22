@@ -21,9 +21,9 @@ fams=`echo "$ids" | awk '{print $2}' | uniq`
 
 # clear previous ones
 for i in $fams; do
-	sed -i "/$i/d" include/r600_pci_ids.h
+	sed -i "/$i/d" r600_pci_ids.h
 done
 
 ids=`echo "$ids" | awk '{print "CHIPSET(" $1 ", " $1 ", " $2 ")"}'`
 
-echo "$ids" >> include/r600_pci_ids.h
+echo "$ids" >> r600_pci_ids.h
