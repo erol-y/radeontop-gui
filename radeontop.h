@@ -90,11 +90,11 @@ class rdtop
 
         bool haserror() const;
         bool init_rdtop();
-        int get_ticks() const {return ticks;}
+        int get_ticks() {return ticks;}
         struct bits_t get_bits() const {return bits;}
         const char * get_drm_name() const {return drm_name;}
         void get_drm_version(struct _m_drm_version *);
-        const char * const get_family_name();
+        const char * get_family_name() const;
         unsigned int readgrbm();
         unsigned long long getvram();
         unsigned long long getgtt();

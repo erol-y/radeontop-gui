@@ -40,6 +40,7 @@
 					<Add option="-ffunction-sections -fdata-sections" />
 					<Add option="`pkg-config --cflags pciaccess`" />
 					<Add option="`pkg-config --cflags libdrm`" />
+					<Add option="-DENABLE_AMDGPU=1" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

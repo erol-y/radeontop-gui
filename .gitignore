@@ -1,0 +1,11 @@
+*.o
+version.h
+bin
+bin/*
+obj
+obj/*
+rdt-gui.depend
+rdt-gui.layout
+debian/.debhelper
+debian/radeontop-gui
+debian/radeontop-gui*

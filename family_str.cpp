@@ -66,5 +66,6 @@ const char * const family_str[] = {
 	str(POLARIS10),
 	str(POLARIS12),
 	str(VEGA10),
+	str(RAVEN),
 };
 }

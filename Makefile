@@ -6,7 +6,7 @@
 #		because amdgpu requires libdrm >= 2.4.63
 #   (*) 30 Sep 2017 For default, amdgpu is on
 
-PREFIX ?= /usr
+PREFIX ?= usr
 INSTALL ?= install
 LIBDIR ?= lib
 
@@ -67,7 +67,7 @@ LIBS += $(shell pkg-config --libs libdrm)
 LDFLAGS += -lcpufreq
 LDFLAGS +=	`wx-config --libs`
 
-.PHONY: all clean install dist
+.PHONY: all clean install uninstall dist
 
 all: $(bin)
 
@@ -79,7 +79,7 @@ $(bin): $(obj)
 	$(CXX) -o $(OUTDIR)/$(bin) $(obj) $(CFLAGS) $(LDFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o $(bin) $(xcblib)
+	rm -f *.o $(OUTDIR)/$(bin)
 
 .git:
 
@@ -98,6 +98,9 @@ install: all
 	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
 	$(INSTALL) -D -m755 $(scrpt) $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
 
+uninstall:
+	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
+	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
 
 dist: ver = $(shell git describe)
 dist: name = $(bin)-$(ver)
