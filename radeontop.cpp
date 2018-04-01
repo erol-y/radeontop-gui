@@ -90,7 +90,7 @@ unsigned int rdtop::readgrbm()
 }
 
 
-const char * const rdtop::get_family_name()
+const char * rdtop::get_family_name() const
 {
     return family_str[family];
 }
