@@ -64,8 +64,8 @@ void rdt_guiFrame::OnQuit(wxCommandEvent &event)
 
 void rdt_guiFrame::OnAbout(wxCommandEvent &event)
 {
-    wxString msg = wxT("Radeontop GUI");
-    wxMessageBox(msg, _("Welcome to..."));
+    wxString title = wxT("Radeontop GUI");
+    wxMessageBox(wxString::Format("%s %s", title, _(VERSION)), title);
     wxUnusedVar(event);
 }
 

@@ -17,6 +17,10 @@
 #ifndef RDT_GUIMAIN_H
 #define RDT_GUIMAIN_H
 
+#ifndef VER_H
+#include "version.h"
+#endif // VER_H
+
 #include <iostream>
 #include <map>
 
