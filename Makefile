@@ -79,7 +79,7 @@ $(bin): $(obj)
 	$(CXX) -o $(OUTDIR)/$(bin) $(obj) $(CFLAGS) $(LDFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o $(OUTDIR)/$(bin)
+	rm -f *.o $(OUTDIR)/$(bin) $(verh)
 
 .git:
 
