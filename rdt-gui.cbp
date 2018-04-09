@@ -28,6 +28,9 @@
 					<Add option="`pkg-config --libs libdrm`" />
 					<Add option="-lcpufreq" />
 				</Linker>
+				<ExtraCommands>
+					<Add before="./getver.sh" />
+				</ExtraCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/radeontop-gui" prefix_auto="1" extension_auto="1" />
