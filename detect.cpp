@@ -45,7 +45,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
     struct pci_device_iterator *iter = pci_id_match_iterator_create(&match);
 	struct pci_device *dev = NULL;
-	char busid[32];
+	//char busid[32];
 
 	while ((dev = pci_device_next(iter))) {
 		pci_device_probe(dev);
@@ -57,6 +57,13 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		if (!bus || bus == dev->bus)
 			break;
 	}
+
+	snprintf(devid, sizeof(devid), "ven:%.4X_dev:%.4X_subven:%.4X_subdev:%.4X",
+                                      dev->vendor_id,
+                                      dev->device_id,
+                                      dev->subvendor_id,
+                                      dev->subdevice_id);
+
 
 	pci_iterator_destroy(iter);
 
@@ -73,18 +80,30 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
     drm_fd = drmOpen(NULL, busid);
 	if (drm_fd >= 0) {
 		drmVersionPtr ver = drmGetVersion(drm_fd);
-		if (strcmp(ver->name, "radeon") != 0 && strcmp(ver->name, "amdgpu") != 0) {
+		if (strcmp(ver->name, "radeon") != 0 && strcmp(ver->name, "amdgpu") != 0)
+        {
+            strcpy(drm_name, ver->name);
 			close(drm_fd);
 			drm_fd = -1;
 		}
-		strcpy(drm_name, ver->name);
+
 		drmFreeVersion(ver);
 	}
+	else
+    {
+        snprintf(drm_name, sizeof(drm_name), "???");
+    }
 
 	if (drm_fd < 0 && access("/dev/ati/card0", F_OK) == 0) // fglrx path
-		drm_fd = open("/dev/ati/card0", O_RDWR);
+    {
+        drm_fd = open("/dev/ati/card0", O_RDWR);
+        snprintf(devpath, sizeof(devpath), "/dev/ati/card0");
+    }
 	else if (drm_fd < 0 && access("/dev/dri/card0", F_OK) == 0)
+    {
         drm_fd = open("/dev/dri/card0", O_RDWR);
+        snprintf(devpath, sizeof(devpath), "/dev/dri/card0");
+    }
 
 	use_ioctl = 0;
 	if (drm_fd >= 0) {
@@ -141,8 +160,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		if (strcmp(drm_name, "radeon") == 0) {
 			struct drm_radeon_gem_info gem;
 
-			ret = drmCommandWriteRead(drm_fd, DRM_RADEON_GEM_INFO,
-							&gem, sizeof(gem));
+			ret = drmCommandWriteRead(drm_fd, DRM_RADEON_GEM_INFO, &gem, sizeof(gem));
 			vramsize = gem.vram_size;
 			gttsize = gem.gart_size;
 		} else if (strcmp(drm_name, "amdgpu") == 0) {
@@ -155,8 +173,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 			request.return_size = sizeof(vram_gtt);
 			request.query = AMDGPU_INFO_MEMORY;
 
-			ret = drmCommandWrite(drm_fd, DRM_AMDGPU_INFO,
-						&request, sizeof(request));
+			ret = drmCommandWrite(drm_fd, DRM_AMDGPU_INFO, &request, sizeof(request));
 			vramsize = vram_gtt.vram.total_heap_size;
 			gttsize = vram_gtt.gtt.total_heap_size;
 #else
@@ -288,7 +305,14 @@ unsigned int rdtop::get_sclk()
 	else if (strcmp(drm_name, "amdgpu") == 0)
     {
 #ifdef ENABLE_AMDGPU
-		//TODO
+		struct drm_amdgpu_info info;
+		memset(&info, 0, sizeof(info));
+		info.return_pointer = (unsigned long) &val;
+		info.return_size = sizeof(val);
+		info.query = AMDGPU_INFO_SENSOR;
+		info.sensor_info.type = AMDGPU_INFO_SENSOR_GFX_SCLK;
+
+		ret = drmCommandWriteRead(drm_fd, DRM_AMDGPU_INFO, &info, sizeof(info));
 #endif
 	}
 	if (ret) return 0;
@@ -313,7 +337,15 @@ unsigned int rdtop::get_mclk()
 	else if (strcmp(drm_name, "amdgpu") == 0)
     {
 #ifdef ENABLE_AMDGPU
-		//TODO
+		struct drm_amdgpu_info info;
+		memset(&info, 0, sizeof(info));
+		info.return_pointer = (unsigned long long) &val;
+		info.return_size = sizeof(val);
+		info.query = AMDGPU_INFO_SENSOR;
+		info.sensor_info.type = AMDGPU_INFO_SENSOR_GFX_MCLK;
+
+		ret = drmCommandWriteRead(drm_fd, DRM_AMDGPU_INFO, &info, sizeof(info));
+
 #endif
 	}
 	if (ret) return 0;
@@ -321,22 +353,6 @@ unsigned int rdtop::get_mclk()
 	return val;
 }
 
-int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
-{
-    int ret = -1;
-    struct drm_radeon_info info;
-    memset(&info, 0, sizeof(info));
-
-    info.value = (unsigned long)data;
-    info.request = CommandIndex;
-
-    ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
-
-    printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
-
-    return ret;
-
-}
 
 void rdtop::initbits(int fam)
 {

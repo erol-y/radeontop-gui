@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2017 Erol Yesilyurt
+	Copyright (C) 2018 Erol Yesilyurt
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

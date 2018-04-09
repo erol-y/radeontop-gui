@@ -319,16 +319,17 @@ QDialog::QDialog(wxWindow * parent)
     rdtFrame = (rdt_guiFrame *) parent;
     wxLog::SetActiveTarget(new wxLogTextCtrl(QtextCtrl1));
 
-    wxLogMessage("Version (%u.%u.%u),   Driver: %s\n",
+    wxLogMessage("Bus: %s", rdtFrame->rdt->get_str_busid());
+    wxLogMessage("%s", rdtFrame->rdt->get_str_devid());
+    wxLogMessage("Path: %s",rdtFrame->rdt->get_str_devpath());
+    wxLogMessage("Driver: %s  %u.%u.%u\n",
+                 rdtFrame->rdt->get_drm_name(),
                  rdtFrame->m_drm_ver.version_major,
                  rdtFrame->m_drm_ver.version_minor,
-                 rdtFrame->m_drm_ver.version_patchlevel,
-                 rdtFrame->rdt->get_drm_name());
+                 rdtFrame->m_drm_ver.version_patchlevel);
 
     if(rdtFrame->rdt != NULL && !rdtFrame->rdt->haserror())
     {
-
-
         if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
         {
             QchoiceAMD->Hide();
@@ -357,7 +358,7 @@ void QDialog::OnQueryClose(wxCloseEvent& event)
     wxUnusedVar(event);
 }
 
-void QDialog::OnQChoice(wxCommandEvent& event)
+void QDialog::OnQChoiceR(wxCommandEvent& event)
 {
     if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
     {
@@ -438,6 +439,113 @@ void QDialog::OnQChoice(wxCommandEvent& event)
     wxUnusedVar(event);
 }
 
+void QDialog::OnQChoiceA(wxCommandEvent& event)
+{
+    class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->rdt->get_drm_handle());
+
+    //TODO: Edit labels as readable as much
+    switch(QchoiceAMD->GetSelection())
+    {
+        case 1: //SENSORS
+            {
+                struct radeontop::m_amdgpu_sensor * sensor = new radeontop::m_amdgpu_sensor();
+
+                amd->ReadSensor(sensor, 0);
+
+                wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\n",
+                             sensor->gfx_sclk,
+                             sensor->gfx_mclk,
+                             sensor->gpu_temp /100, /* get temperature in millidegrees C */
+                             sensor->gpu_load,
+                             sensor->gpu_avg_power,
+                             sensor->vddnb,
+                             sensor->vddgfx);
+
+                delete sensor;
+            } break;
+        case 2: //HARDWARE
+            {
+                radeontop::amdgpu_dev_info info;
+
+                if(!amd->GetDevInfo(&info))
+                {
+                    wxLogMessage("Could not get device info!");
+                    break;
+                }
+
+                wxLogMessage("Chip Revision: %.2X , External Revision: %.2X",
+                             info.chip_rev, info.external_rev);
+
+                wxLogMessage("num_cu_per_sh: %d", info.num_cu_per_sh);
+                wxLogMessage("Shader Arrays per Engine: %d , Shader Engines: %d",
+                             info.num_shader_engines, info.num_shader_arrays_per_engine);
+
+                wxLogMessage("cu_active_number: %d", info.cu_active_number);
+                wxLogMessage("gpu_counter_freq: %dMHz", (int)info.gpu_counter_freq / 1000);
+                wxLogMessage("max_engine_clock: %dMHz", (int)info.max_engine_clock / 1000);
+                wxLogMessage("max_memory_clock: %dMHz", (int)info.max_memory_clock / 1000);
+
+                std::string s("???");
+                switch(info.vram_type)
+                {
+                case VRAM_TYPE_UNKNOWN: { s.assign("UNKNOWN"); } break;
+                case VRAM_TYPE_GDDR1: { s.assign("GDDR1"); } break;
+                case VRAM_TYPE_DDR2: { s.assign("DDR2"); } break;
+                case VRAM_TYPE_GDDR3: { s.assign("GDDR3"); } break;
+                case VRAM_TYPE_GDDR4: { s.assign("GDDR4"); } break;
+                case VRAM_TYPE_GDDR5: { s.assign("GDDR5"); } break;
+                case VRAM_TYPE_HBM: { s.assign("HBM"); } break;
+                case VRAM_TYPE_DDR3: { s.assign("DDR3"); } break;
+                }
+                wxLogMessage("VRAM Type: \"%s\"", s.c_str());
+
+                wxLogMessage("vram_bit_width: %d", info.vram_bit_width);
+
+                wxLogMessage("ce_ram_size: %dKb", (unsigned)info.ce_ram_size / 1024);
+                wxLogMessage("num_tcc_blocks: %d", info.num_tcc_blocks);
+                wxLogMessage("gs_vgt_table_depth: %d", info.gs_vgt_table_depth);
+                wxLogMessage("gs_prim_buffer_depth: %d", info.gs_prim_buffer_depth);
+                wxLogMessage("max_gs_waves_per_vgt: %d", info.max_gs_waves_per_vgt);
+
+            } break;
+        case 3: // UVD
+            {
+                radeontop::amdgpu_uvd_handles uvd;
+                memset(&uvd, 0, sizeof(uvd));
+                radeontop::amdgpu_uvd_handles * p = &uvd;
+                amd->GetQueryA(AMDGPU_INFO_NUM_HANDLES, (unsigned long long*)p, sizeof(uvd));
+
+                if(p == NULL)
+                    break;
+
+                wxLogMessage("Used:%d -- Max:%d",
+                             uvd.uvd_used_handles, uvd.uvd_max_handles);
+
+            } break;
+        case 4: // VCE
+            {
+                unsigned char c;
+                c = amd->GetClockTable().size();
+                //wxLogMessage("VCE table entry count: %d", c);
+                wxString s;
+                s << wxString::Format("VCE table entry count: %d\n", c);
+                for(unsigned char i = 0; i < c; ++i)
+                    s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u\n",
+                                          i+1,
+                                          amd->GetClockTable()[i].sclk,
+                                          amd->GetClockTable()[i].eclk,
+                                          amd->GetClockTable()[i].mclk);
+
+                wxLogMessage(s);
+
+            } break;
+
+    }
+
+    delete amd;
+    wxUnusedVar(event);
+}
+
 void rdt_guiFrame::OnCpuQuery(wxCommandEvent& event)
 {
     if(event.IsChecked())
@@ -500,7 +608,7 @@ CpuDialog::~CpuDialog()
 
 void CpuDialog::UpdateCpuVal(wxTimerEvent& event)
 {
-    std::map<unsigned char, std::map<wxStaticText *, wxGauge *>::iterator>::iterator itr = mapCPU.begin();
+    std::map<unsigned char, std::map<wxStaticText *, wxGauge *>::iterator>::iterator itr;
     unsigned char cc = cfq->GetCpuCount();
     unsigned char i = 0;
     unsigned long min = 0;

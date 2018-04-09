@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <map>
+#include <string>
 
 #include "rdt_guiApp.h"
 #include "GUIFrame.h"
@@ -92,7 +93,8 @@ class QDialog: public QueryDialog
 
     protected:
         virtual void OnQueryClose(wxCloseEvent& event);
-        virtual void OnQChoice(wxCommandEvent& event);
+        virtual void OnQChoiceR(wxCommandEvent& event);
+        virtual void OnQChoiceA(wxCommandEvent& event);
 };
 
 class CpuDialog: public CpuQueryDialog

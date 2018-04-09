@@ -150,7 +150,8 @@ class QueryDialog : public wxDialog
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnQueryClose( wxCloseEvent& event ) { event.Skip(); }
-		virtual void OnQChoice( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnQChoiceR( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnQChoiceA( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:

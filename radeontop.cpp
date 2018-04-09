@@ -25,6 +25,7 @@ rdtop::rdtop()
     vramsize = 0;
     gttsize = 0;
     use_ioctl = 0;
+    drm_fd = 0;
     family = 0;
     ticks = 120;
     m_err = false;
@@ -98,6 +99,126 @@ const char * rdtop::get_family_name() const
 void rdtop::get_drm_version(struct _m_drm_version * drm_ver)
 {
     memcpy(drm_ver, &m_drm_version, sizeof(m_drm_version));
+}
+
+int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
+{
+    int ret = -1;
+    struct drm_radeon_info info;
+    memset(&info, 0, sizeof(info));
+
+    info.value = (unsigned long)data;
+    info.request = CommandIndex;
+
+    ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
+
+    printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
+
+    return ret;
+
+}
+
+/*
+    If subquery greater than zero (single mode), function returns queried value.
+    Else, first parameter (pointer to struct) not null, it fills struct's elements
+    and returns zero.
+*/
+unsigned long long m_amdgpu_info::ReadSensor(m_amdgpu_sensor *s, int subquery)
+{
+    unsigned long long val = 0;
+    struct drm_amdgpu_info info;
+    info.query = AMDGPU_INFO_SENSOR;
+
+    if(subquery > 0) // Single Mode
+    {
+        info.sensor_info.type = subquery;
+        info.return_pointer = (unsigned long long) &val;
+        info.return_size = sizeof(val);
+
+        drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &info, sizeof(info));
+        return val;
+    }
+    else if(s != NULL) // Batch Mode (Call "single mode" recursively)
+    {
+        s->gfx_sclk = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GFX_SCLK);
+        s->gfx_mclk = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GFX_MCLK);
+        s->gpu_temp = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GPU_TEMP);
+        s->gpu_load = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GPU_LOAD);
+        s->gpu_avg_power = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GPU_AVG_POWER);
+        s->vddnb = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_VDDNB);
+        s->vddgfx = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_VDDGFX);
+
+        return 0; // it should return 0.
+    }
+
+    return -1; // Something went wrong!
+}
+
+bool m_amdgpu_info::GetDevInfo(amdgpu_dev_info * info)
+{
+    int ret = 0;
+    drm_amdgpu_info i;
+    i.return_pointer = (unsigned long long)info;
+    i.return_size = sizeof(*info);
+    i.query = AMDGPU_INFO_DEV_INFO;
+    memset(info, 0, sizeof(*info));
+
+    ret = drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &i, sizeof(i));
+
+    return (ret?false:true);
+}
+
+void m_amdgpu_info::GetQueryA(int query, unsigned long long * p, unsigned ret_size)
+{
+    int ret = 0;
+    drm_amdgpu_info i;
+    memset(&i, 0, sizeof(i));
+
+    i.return_pointer = *p;
+    i.return_size = ret_size;
+    i.query = query;
+
+    ret = drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &i, sizeof(i));
+
+    if(ret != 0)
+       p = NULL;
+
+    return;
+}
+
+std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> m_amdgpu_info::GetClockTable(bool refresh)
+{
+    if(this->vce_clock_table.begin() == this->vce_clock_table.end() || refresh)
+    {
+        if(refresh)
+            vce_clock_table.clear();
+
+        struct drm_amdgpu_info_vce_clock_table table;
+        memset(&table, 0, sizeof(table));
+        struct drm_amdgpu_info i;
+        memset(&i, 0, sizeof(i));
+        i.return_pointer = (unsigned long long)&table;
+        i.return_size = sizeof(table);
+        i.query = AMDGPU_INFO_VCE_CLOCK_TABLE;
+
+        drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &i, sizeof(i));
+
+        for(unsigned char i = 0; i < table.num_valid_entries; ++i)
+            vce_clock_table.insert(std::make_pair(i, table.entries[i]));
+    }
+
+    return vce_clock_table;
+}
+
+// Constructor
+m_amdgpu_info::m_amdgpu_info(int handle)
+    : hDRM(handle)
+{
+}
+
+// Destructor
+m_amdgpu_info::~m_amdgpu_info()
+{
 }
 
 }

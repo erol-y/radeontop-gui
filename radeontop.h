@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <map>
 #include <signal.h>
 #include <locale.h>
 #include <xf86drm.h>
@@ -74,6 +75,36 @@ struct bits_t {
 	unsigned int mclk;
 };
 
+#ifdef ENABLE_AMDGPU
+typedef struct drm_amdgpu_info_device amdgpu_dev_info;
+typedef struct drm_amdgpu_info_num_handles amdgpu_uvd_handles;
+
+#define VRAM_TYPE_UNKNOWN   AMDGPU_VRAM_TYPE_UNKNOWN
+#define VRAM_TYPE_GDDR1     AMDGPU_VRAM_TYPE_GDDR1
+#define VRAM_TYPE_DDR2      AMDGPU_VRAM_TYPE_DDR2
+#define VRAM_TYPE_GDDR3     AMDGPU_VRAM_TYPE_GDDR3
+#define VRAM_TYPE_GDDR4     AMDGPU_VRAM_TYPE_GDDR4
+#define VRAM_TYPE_GDDR5     AMDGPU_VRAM_TYPE_GDDR5
+#define VRAM_TYPE_HBM       AMDGPU_VRAM_TYPE_HBM
+#define VRAM_TYPE_DDR3      AMDGPU_VRAM_TYPE_DDR3
+
+#endif // ENABLE_AMDGPU
+
+struct m_amdgpu_sensor
+{
+    unsigned int gfx_sclk;
+    unsigned int gfx_mclk;
+    int gpu_temp;
+    unsigned int gpu_load;
+    unsigned int gpu_avg_power;
+    unsigned int vddnb;
+    unsigned int vddgfx;
+
+    m_amdgpu_sensor()
+        : gfx_sclk(0), gfx_mclk(0), gpu_temp(0), gpu_load(0), gpu_avg_power(0), vddnb(0), vddgfx(0)
+        {}
+};
+
 struct _m_drm_version
 {
     int version_major;
@@ -81,19 +112,39 @@ struct _m_drm_version
     int version_patchlevel;
 };
 
+class m_amdgpu_info
+{
+public:
+    unsigned long long ReadSensor(m_amdgpu_sensor *, int);
+    bool GetDevInfo(amdgpu_dev_info *);
+    void GetQueryA(int, unsigned long long *, unsigned); //Query, ret_addr, ret_size
+    std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> GetClockTable(bool = false); //bool refresh = false
+
+    m_amdgpu_info(int);
+    ~m_amdgpu_info();
+
+private:
+    int hDRM;
+    std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> vce_clock_table;
+
+};
+
 class rdtop
 {
     public:
-        //struct bits_t bits;
         unsigned long long vramsize;
         unsigned long long gttsize;
 
         bool haserror() const;
         bool init_rdtop();
-        int get_ticks() {return ticks;}
-        struct bits_t get_bits() const {return bits;}
-        const char * get_drm_name() const {return drm_name;}
+        int get_ticks() { return ticks; }
+        struct bits_t get_bits() const { return bits; }
+        const int get_drm_handle() { return drm_fd; }
+        const char * get_drm_name() const { return drm_name; }
         void get_drm_version(struct _m_drm_version *);
+        const char * get_str_busid() const { return busid; }
+        const char * get_str_devid() const { return devid; }
+        const char * get_str_devpath() const { return devpath; }
         const char * get_family_name() const;
         unsigned int readgrbm();
         unsigned long long getvram();
@@ -115,6 +166,9 @@ class rdtop
         int getfamily(unsigned int);
         void initbits(int);
         int drm_fd;
+        char busid[32];
+        char devid[64];
+        char devpath[16];
         char drm_name[10];
         int use_ioctl;
 

@@ -353,8 +353,9 @@ QueryDialog::QueryDialog( wxWindow* parent, wxWindowID id, const wxString& title
 	QchoiceRadeon->SetSelection( 0 );
 	bSizer2->Add( QchoiceRadeon, 0, wxALL, 5 );
 	
-	wxArrayString QchoiceAMDChoices;
-	QchoiceAMD = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, QchoiceAMDChoices, 0 );
+	wxString QchoiceAMDChoices[] = { wxEmptyString, wxT("Sensors"), wxT("Hardware"), wxT("UVD"), wxT("VCE") };
+	int QchoiceAMDNChoices = sizeof( QchoiceAMDChoices ) / sizeof( wxString );
+	QchoiceAMD = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, QchoiceAMDNChoices, QchoiceAMDChoices, 0 );
 	QchoiceAMD->SetSelection( 0 );
 	bSizer2->Add( QchoiceAMD, 0, wxALL, 5 );
 	
@@ -369,14 +370,16 @@ QueryDialog::QueryDialog( wxWindow* parent, wxWindowID id, const wxString& title
 	
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( QueryDialog::OnQueryClose ) );
-	QchoiceRadeon->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoice ), NULL, this );
+	QchoiceRadeon->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoiceR ), NULL, this );
+	QchoiceAMD->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoiceA ), NULL, this );
 }
 
 QueryDialog::~QueryDialog()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( QueryDialog::OnQueryClose ) );
-	QchoiceRadeon->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoice ), NULL, this );
+	QchoiceRadeon->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoiceR ), NULL, this );
+	QchoiceAMD->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( QueryDialog::OnQChoiceA ), NULL, this );
 	
 }
 
