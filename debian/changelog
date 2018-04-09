@@ -1,3 +1,9 @@
+radeontop-gui (1.3) trusty; urgency=medium
+
+  * GPU info query ability under amdgpu
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com>  Mon, 09 Apr 2018 04:36:25 +0300
+
 radeontop-gui (1.2) trusty; urgency=medium
 
   * Simple cpu frequency window.
