@@ -139,7 +139,7 @@ class rdtop
         bool init_rdtop();
         int get_ticks() { return ticks; }
         struct bits_t get_bits() const { return bits; }
-        const int get_drm_handle() { return drm_fd; }
+        int get_drm_handle() const { return drm_fd; }
         const char * get_drm_name() const { return drm_name; }
         void get_drm_version(struct _m_drm_version *);
         const char * get_str_busid() const { return busid; }

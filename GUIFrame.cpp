@@ -109,6 +109,18 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	statusBar = this->CreateStatusBar( 2, 0, wxID_ANY );
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
+	m_staticText_gpu_load = new wxStaticText( this, wxID_ANY, wxT("GPU Load"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_gpu_load->Wrap( -1 );
+	m_staticText_gpu_load->Hide();
+	
+	bSizer1->Add( m_staticText_gpu_load, 0, wxALL, 5 );
+	
+	m_gauge_gpu_load = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxSize( -1,15 ), wxGA_HORIZONTAL );
+	m_gauge_gpu_load->SetValue( 0 ); 
+	m_gauge_gpu_load->Hide();
+	
+	bSizer1->Add( m_gauge_gpu_load, 0, wxALL|wxEXPAND, 5 );
+	
 	m_staticText_gui = new wxStaticText( this, wxID_ANY, wxT("Graphics Pipe"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_gui->Wrap( -1 );
 	bSizer1->Add( m_staticText_gui, 0, wxALL, 5 );
@@ -385,21 +397,73 @@ QueryDialog::~QueryDialog()
 
 CpuQueryDialog::CpuQueryDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	this->SetSizeHints( wxSize( 420,310 ), wxDefaultSize );
 	
-	CpuSizer = new wxBoxSizer( wxVERTICAL );
+	topSizer = new wxBoxSizer( wxVERTICAL );
+	
+	choiceSizer = new wxFlexGridSizer( 0, 4, 0, 0 );
+	choiceSizer->SetFlexibleDirection( wxHORIZONTAL );
+	choiceSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
+	
+	m_staticText_limit = new wxStaticText( this, wxID_ANY, wxT("Limit"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_limit->Wrap( -1 );
+	choiceSizer->Add( m_staticText_limit, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxString m_choice_limitChoices[] = { wxT("ALL") };
+	int m_choice_limitNChoices = sizeof( m_choice_limitChoices ) / sizeof( wxString );
+	m_choice_limit = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_limitNChoices, m_choice_limitChoices, 0 );
+	m_choice_limit->SetSelection( 0 );
+	choiceSizer->Add( m_choice_limit, 1, wxALL|wxEXPAND, 5 );
 	
 	
-	this->SetSizer( CpuSizer );
+	choiceSizer->Add( 120, 0, 1, wxEXPAND, 5 );
+	
+	m_checkBox_avg = new wxCheckBox( this, wxID_ANY, wxT("Avarage"), wxDefaultPosition, wxDefaultSize, 0 );
+	choiceSizer->Add( m_checkBox_avg, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	
+	topSizer->Add( choiceSizer, 1, wxALL|wxEXPAND, 5 );
+	
+	m_staticText_reduced = new wxStaticText( this, wxID_ANY, wxT("Reduced"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_reduced->Wrap( -1 );
+	topSizer->Add( m_staticText_reduced, 0, wxALL, 5 );
+	
+	m_gauge_reduced = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxSize( -1,15 ), wxGA_HORIZONTAL );
+	m_gauge_reduced->SetValue( 0 ); 
+	topSizer->Add( m_gauge_reduced, 0, wxALL|wxEXPAND, 5 );
+	
+	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	topSizer->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
+	
+	middleSizer = new wxBoxSizer( wxVERTICAL );
+	
+	middleSizer->SetMinSize( wxSize( -1,300 ) ); 
+	m_scrolledWindow1 = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxSize( -1,-1 ), wxVSCROLL );
+	m_scrolledWindow1->SetScrollRate( 5, 5 );
+	scrolledSizer = new wxBoxSizer( wxVERTICAL );
+	
+	
+	m_scrolledWindow1->SetSizer( scrolledSizer );
+	m_scrolledWindow1->Layout();
+	scrolledSizer->Fit( m_scrolledWindow1 );
+	middleSizer->Add( m_scrolledWindow1, 1, wxEXPAND | wxALL, 5 );
+	
+	
+	topSizer->Add( middleSizer, 1, wxEXPAND, 5 );
+	
+	
+	this->SetSizer( topSizer );
 	this->Layout();
 	timer_cpu.SetOwner( this, wxID_ANY );
-	timer_cpu.Start( 750 );
+	timer_cpu.Start( 600 );
 	
 	
 	this->Centre( wxBOTH );
 	
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CpuQueryDialog::OnCpuDialogClose ) );
+	m_choice_limit->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CpuQueryDialog::OnChoiceCpuLimit ), NULL, this );
+	m_checkBox_avg->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CpuQueryDialog::OnCheckBoxAvg ), NULL, this );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( CpuQueryDialog::UpdateCpuVal ) );
 }
 
@@ -407,6 +471,8 @@ CpuQueryDialog::~CpuQueryDialog()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CpuQueryDialog::OnCpuDialogClose ) );
+	m_choice_limit->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CpuQueryDialog::OnChoiceCpuLimit ), NULL, this );
+	m_checkBox_avg->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CpuQueryDialog::OnCheckBoxAvg ), NULL, this );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( CpuQueryDialog::UpdateCpuVal ) );
 	
 }

@@ -28,6 +28,9 @@
 #include <wx/choice.h>
 #include <wx/textctrl.h>
 #include <wx/dialog.h>
+#include <wx/checkbox.h>
+#include <wx/statline.h>
+#include <wx/scrolwin.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -67,6 +70,8 @@ class GUIFrame : public wxFrame
 		wxMenu* helpMenu;
 		wxStatusBar* statusBar;
 		wxBoxSizer* bSizer1;
+		wxStaticText* m_staticText_gpu_load;
+		wxGauge* m_gauge_gpu_load;
 		wxStaticText* m_staticText_gui;
 		wxGauge* m_gauge_gui;
 		wxStaticText* m_staticText_ee;
@@ -169,17 +174,29 @@ class CpuQueryDialog : public wxDialog
 	private:
 	
 	protected:
-		wxBoxSizer* CpuSizer;
+		wxBoxSizer* topSizer;
+		wxFlexGridSizer* choiceSizer;
+		wxStaticText* m_staticText_limit;
+		wxChoice* m_choice_limit;
+		wxCheckBox* m_checkBox_avg;
+		wxStaticText* m_staticText_reduced;
+		wxGauge* m_gauge_reduced;
+		wxStaticLine* m_staticline1;
+		wxBoxSizer* middleSizer;
+		wxScrolledWindow* m_scrolledWindow1;
+		wxBoxSizer* scrolledSizer;
 		wxTimer timer_cpu;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnCpuDialogClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnChoiceCpuLimit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCheckBoxAvg( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateCpuVal( wxTimerEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		
-		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 423,311 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,371 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~CpuQueryDialog();
 	
 };

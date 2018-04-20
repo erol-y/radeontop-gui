@@ -27,8 +27,8 @@
 
 #include "rdt_guiApp.h"
 #include "GUIFrame.h"
-#include "wx/msgdlg.h"
-#include "wx/log.h"
+#include <wx/msgdlg.h>
+#include <wx/log.h>
 #include "radeontop.h"
 #include "cputop.h"
 
@@ -102,17 +102,20 @@ class CpuDialog: public CpuQueryDialog
     public:
         CpuDialog(wxWindow *);
         ~CpuDialog();
-
     private:
         rdt_guiFrame * rdtFrame;
         cputop::cpufreq * cfq;
 
         std::map<wxStaticText *, wxGauge *> mapCpuWindowElements;
         std::map<unsigned char, std::map<wxStaticText *, wxGauge *>::iterator> mapCPU;
+        std::map<unsigned char, unsigned long> mapAvg;
+        bool isAvg;
+        unsigned int cAvg;
 
     protected:
+        virtual void OnChoiceCpuLimit(wxCommandEvent& event);
+        virtual void OnCheckBoxAvg(wxCommandEvent& event);
         virtual void OnCpuDialogClose(wxCloseEvent& event);
         virtual void UpdateCpuVal(wxTimerEvent& event);
-
 };
 #endif // RDT_GUIMAIN_H
