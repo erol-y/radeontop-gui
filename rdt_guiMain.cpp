@@ -614,7 +614,7 @@ CpuDialog::CpuDialog(wxWindow * parent)
         }
 
     }
-        m_choice_limit->SetSelection( cc >= 4? 2: 1 );
+        m_choice_limit->SetSelection( cc >= 4? 2: 1 ); //Initial behavior: show none, if cc less than 4.
         m_choice_limit->SendSelectionChangedEvent(wxEVT_COMMAND_CHOICE_SELECTED);
 
 }
@@ -641,7 +641,7 @@ void CpuDialog::OnChoiceCpuLimit(wxCommandEvent& event)
         itr->second->second->Hide();
     }
 
-    for(; y >= 0; --y)
+    for(; y > 0; --y)
     {
         itr = mapCPU.find(y-1);
         if(itr == mapCPU.end())
