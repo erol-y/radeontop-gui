@@ -614,7 +614,7 @@ CpuDialog::CpuDialog(wxWindow * parent)
         }
 
     }
-        m_choice_limit->SetSelection( 1 );
+        m_choice_limit->SetSelection( cc >= 4? 2: 1 );
         m_choice_limit->SendSelectionChangedEvent(wxEVT_COMMAND_CHOICE_SELECTED);
 
 }
@@ -627,8 +627,10 @@ void CpuDialog::OnChoiceCpuLimit(wxCommandEvent& event)
 
     if(y == 0) //Show all
         y = cc;
+    else if(y == 1) //Show none
+        y = 0;
     else
-        y = y*4;
+        y = (y - 1) * 4;
 
     for(; cc > y; --cc)
     {

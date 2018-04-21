@@ -397,7 +397,7 @@ QueryDialog::~QueryDialog()
 
 CpuQueryDialog::CpuQueryDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 420,310 ), wxDefaultSize );
+	this->SetSizeHints( wxSize( 420,140 ), wxDefaultSize );
 	
 	topSizer = new wxBoxSizer( wxVERTICAL );
 	
@@ -409,7 +409,7 @@ CpuQueryDialog::CpuQueryDialog( wxWindow* parent, wxWindowID id, const wxString&
 	m_staticText_limit->Wrap( -1 );
 	choiceSizer->Add( m_staticText_limit, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	wxString m_choice_limitChoices[] = { wxT("ALL") };
+	wxString m_choice_limitChoices[] = { wxT("ALL"), wxT("NONE") };
 	int m_choice_limitNChoices = sizeof( m_choice_limitChoices ) / sizeof( wxString );
 	m_choice_limit = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_limitNChoices, m_choice_limitChoices, 0 );
 	m_choice_limit->SetSelection( 0 );
