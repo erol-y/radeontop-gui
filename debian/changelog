@@ -1,3 +1,9 @@
+radeontop-gui (1.4.1) trusty; urgency=medium
+
+  * Let Makefile to store object files into "obj/" folder
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com>  Mon, 30 Apr 2018 02:24:30 +0300
+
 radeontop-gui (1.4.0) trusty; urgency=medium
 
   * Cpu frequency window has been re-designed.
