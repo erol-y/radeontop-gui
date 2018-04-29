@@ -10,6 +10,9 @@ PREFIX ?= usr
 INSTALL ?= install
 LIBDIR ?= lib
 
+CXX = g++
+LD = g++
+
 debug ?= 0
 amdgpu ?= 1
 
@@ -52,6 +55,8 @@ else
 	OUTOBJDIR = obj/Release
 endif
 
+OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o
+
 ifndef plain
 ifeq ($(debug), 1)
 	CFLAGS += -g
@@ -73,13 +78,43 @@ all: $(bin)
 
 $(obj): $(wildcard *.h) $(verh)
 
-$(bin): $(OUTDIR)
+$(bin): $(OUTDIR) $(OUTOBJDIR) $(OBJ_OUT)
 
 $(bin): $(obj)
-	$(CXX) -o $(OUTDIR)/$(bin) $(obj) $(CFLAGS) $(LDFLAGS) $(LIBS)
+	$(LD) -o $(OUTDIR)/$(bin) $(OBJ_OUT) $(LDFLAGS) $(LIBS)
+
+$(OUTOBJDIR)/GUIFrame.o: GUIFrame.cpp
+	$(CXX) $(CFLAGS) -c GUIFrame.cpp -o $(OUTOBJDIR)/GUIFrame.o
+
+$(OUTOBJDIR)/auth.o: auth.cpp
+	$(CXX) $(CFLAGS) -c auth.cpp -o $(OUTOBJDIR)/auth.o
+
+$(OUTOBJDIR)/cputop.o: cputop.cpp
+	$(CXX) $(CFLAGS) -c cputop.cpp -o $(OUTOBJDIR)/cputop.o
+
+$(OUTOBJDIR)/detect.o: detect.cpp
+	$(CXX) $(CFLAGS) -c detect.cpp -o $(OUTOBJDIR)/detect.o
+
+$(OUTOBJDIR)/family_str.o: family_str.cpp
+	$(CXX) $(CFLAGS) -c family_str.cpp -o $(OUTOBJDIR)/family_str.o
+
+$(OUTOBJDIR)/radeontop.o: radeontop.cpp
+	$(CXX) $(CFLAGS) -c radeontop.cpp -o $(OUTOBJDIR)/radeontop.o
+
+$(OUTOBJDIR)/rdt_guiApp.o: rdt_guiApp.cpp
+	$(CXX) $(CFLAGS) -c rdt_guiApp.cpp -o $(OUTOBJDIR)/rdt_guiApp.o
+
+$(OUTOBJDIR)/rdt_guiMain.o: rdt_guiMain.cpp
+	$(CXX) $(CFLAGS) -c rdt_guiMain.cpp -o $(OUTOBJDIR)/rdt_guiMain.o
+
+$(OUTOBJDIR)/ticks.o: ticks.cpp
+	$(CXX) $(CFLAGS) -c ticks.cpp -o $(OUTOBJDIR)/ticks.o
+
 
 clean:
 	rm -f *.o $(OUTDIR)/$(bin) $(verh)
+	test ! -d obj/Debug || rm -f obj/Debug/*.o
+	test ! -d obj/Release || rm -f obj/Release/*.o
 
 .git:
 
