@@ -1,16 +1,78 @@
 #! /bin/bash
 
-xhost +
+#path_sbin="/usr/sbin/"
+#path_devel=""
+SUDO=
+INSTALLED=
+exec=
+XHOST=
 
-if [ -f ./radeontop-gui.v1 ]; then
-	sudo ./radeontop-gui.v1
+while [ ! -z "$1" ]; do
 
-else if [ -f ./bin/Debug/radeontop-gui ]; then
-	sudo ./bin/Debug/radeontop-gui
+    PARAM=$1
+    case ${PARAM} in
+		-r|--root)
+		SUDO="sudo"
+		;;
+
+		-i|--installed)
+		if [ -f /usr/sbin/radeontop-gui.v1 ]; then
+			#exec="/usr/sbin/radeontop-gui.v1"
+			INSTALLED="1"
+		else
+			echo "radeontop-gui not found! Try to (re)install."
+			exit 1
+		fi
+		;;
+
+		-x|--xhost)
+		XHOST="1"
+		;;
+
+		-*)
+		echo "\
+Options:
+-r, --root			Run with root priv.
+-i, --installed		Run installed copy , instead of local.
+-x, --xhost			Deactivate xhost."
+		exit 1
+		;;
+
+	esac
+	shift
+done
+
+if [ ! -z $INSTALLED ]; then
+	exec="/usr/sbin/radeontop-gui.v1"
 else
-	sudo ./bin/Release/radeontop-gui
-fi
+### Check where the script runs from.
+	if [[ $0 == /usr/sbin* ]]; then
+		exec="/usr/sbin/radeontop-gui.v1"
+
+### First, try to run debug version.
+	elif [ -f ./bin/Debug/radeontop-gui ]; then
+		exec="./bin/Debug/radeontop-gui"
+
+	elif [ -f ./bin/Release/radeontop-gui ]; then
+		exec="./bin/Release/radeontop-gui"
+
+	else
+		echo "Exec file can not found."
+		echo "$0"
+		exit 1
+	fi
 fi
 
-xhost -
+### Run Time!
+if [ ! -z $XHOST ]; then
+	xhost +
+fi
+
+$SUDO $exec
+
+if [ ! -z $XHOST ]; then
+	xhost -
+fi
+
+exit 0
 
