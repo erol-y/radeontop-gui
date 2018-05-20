@@ -31,7 +31,6 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
         this->m_err = true;
         return 0;
     }
-    std::cout << "pci_system_init: " << ret << std::endl;
 
     struct pci_id_match match;
 
@@ -133,12 +132,6 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
     {
         drmDropMaster(drm_fd);
 		drmVersionPtr ver = drmGetVersion(drm_fd);
-
-		printf("Version %u.%u.%u, name %s\n",
-			ver->version_major,
-			ver->version_minor,
-			ver->version_patchlevel,
-			ver->name);
 
 		if (ver->version_major < 2 ||
 			(ver->version_major == 2 && ver->version_minor < 36)) {

@@ -112,13 +112,13 @@ int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
 
     ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
 
-    printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
+    //printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
 
     return ret;
 
 }
 
-/*
+/**
     If subquery greater than zero (single mode), function returns queried value.
     Else, first parameter (pointer to struct) not null, it fills struct's elements
     and returns zero.
