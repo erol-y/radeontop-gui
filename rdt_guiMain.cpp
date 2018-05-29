@@ -363,6 +363,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
     if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
     {
         unsigned long val = 0;
+        signed long sval = 0;
 
         switch(QchoiceRadeon->GetSelection())
         {
@@ -426,8 +427,8 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
             }
         case 9: //CURRENT_GPU_TEMP
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &val))
-                    wxLogMessage("GPU Temperature: %u", (unsigned)val);
+                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &sval))
+                    wxLogMessage("GPU Temperature: %d", (signed)sval);
 
                 break;
             }
@@ -443,7 +444,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
 {
     class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->rdt->get_drm_handle());
 
-    //TODO: Edit labels as readable as much
+    /**TODO: Edit labels as readable as much */
     switch(QchoiceAMD->GetSelection())
     {
         case 1: //SENSORS
@@ -473,6 +474,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                              sensor->vddnb,
                              sensor->vddgfx);
 #endif // AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
+                wxLogMessage("\n");
 
                 delete sensor;
             } break;
@@ -519,6 +521,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 wxLogMessage("gs_vgt_table_depth: %d", info.gs_vgt_table_depth);
                 wxLogMessage("gs_prim_buffer_depth: %d", info.gs_prim_buffer_depth);
                 wxLogMessage("max_gs_waves_per_vgt: %d", info.max_gs_waves_per_vgt);
+                wxLogMessage("\n");
 
             } break;
         case 3: // UVD
@@ -531,8 +534,8 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 if(p == NULL)
                     break;
 
-                wxLogMessage("Used:%d -- Max:%d",
-                             uvd.uvd_used_handles, uvd.uvd_max_handles);
+                wxLogMessage("Used:%d -- Max:%d", uvd.uvd_used_handles, uvd.uvd_max_handles);
+                wxLogMessage("\n");
 
             } break;
         case 4: // VCE
@@ -543,13 +546,14 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 wxString s;
                 s << wxString::Format("VCE table entry count: %d\n", c);
                 for(unsigned char i = 0; i < c; ++i)
-                    s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u\n",
+                    s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u",
                                           i+1,
                                           amd->GetClockTable()[i].sclk,
                                           amd->GetClockTable()[i].eclk,
                                           amd->GetClockTable()[i].mclk);
 
                 wxLogMessage(s);
+                wxLogMessage("\n");
 
             } break;
 
