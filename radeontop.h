@@ -99,10 +99,19 @@ struct m_amdgpu_sensor
     unsigned int gpu_avg_power;
     unsigned int vddnb;
     unsigned int vddgfx;
-
+#ifdef AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
+    unsigned int pstate_sclk;
+    unsigned int pstate_mclk;
+    m_amdgpu_sensor()
+        : gfx_sclk(0), gfx_mclk(0), gpu_temp(0), gpu_load(0), gpu_avg_power(0), vddnb(0), vddgfx(0),
+        pstate_sclk(0), pstate_mclk(0)
+        {}
+#else
     m_amdgpu_sensor()
         : gfx_sclk(0), gfx_mclk(0), gpu_temp(0), gpu_load(0), gpu_avg_power(0), vddnb(0), vddgfx(0)
         {}
+#endif // AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
+
 };
 
 struct _m_drm_version

@@ -147,6 +147,10 @@ unsigned long long m_amdgpu_info::ReadSensor(m_amdgpu_sensor *s, int subquery)
         s->gpu_avg_power = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_GPU_AVG_POWER);
         s->vddnb = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_VDDNB);
         s->vddgfx = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_VDDGFX);
+#ifdef AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
+        s->pstate_sclk = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK);
+        s->pstate_mclk = this->ReadSensor(NULL, AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK);
+#endif // AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
 
         return 0; // it should return 0.
     }

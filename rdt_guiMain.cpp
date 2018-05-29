@@ -451,7 +451,19 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 struct radeontop::m_amdgpu_sensor * sensor = new radeontop::m_amdgpu_sensor();
 
                 amd->ReadSensor(sensor, 0);
+#ifdef AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
+                wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\npstate_sclk:%d\npstate_mclk:%d\n",
+                             sensor->gfx_sclk,
+                             sensor->gfx_mclk,
+                             sensor->gpu_temp /100, /* get temperature in millidegrees C */
+                             sensor->gpu_load,
+                             sensor->gpu_avg_power,
+                             sensor->vddnb,
+                             sensor->vddgfx,
+                             sensor->pstate_sclk,
+                             sensor->pstate_mclk);
 
+#else
                 wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\n",
                              sensor->gfx_sclk,
                              sensor->gfx_mclk,
@@ -460,6 +472,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                              sensor->gpu_avg_power,
                              sensor->vddnb,
                              sensor->vddgfx);
+#endif // AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
 
                 delete sensor;
             } break;
