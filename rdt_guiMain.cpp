@@ -474,13 +474,13 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                              sensor->vddnb,
                              sensor->vddgfx);
 #endif // AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
-                wxLogMessage("\n");
 
                 delete sensor;
             } break;
         case 2: //HARDWARE
             {
                 radeontop::amdgpu_dev_info info;
+                wxString w(">>>>> Device Info: <<<<<\n");
 
                 if(!amd->GetDevInfo(&info))
                 {
@@ -488,17 +488,18 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                     break;
                 }
 
-                wxLogMessage("Chip Revision: %.2X , External Revision: %.2X",
-                             info.chip_rev, info.external_rev);
+                w << wxString::Format("Chip Revision: %.2X , External Revision: %.2X\n",
+                                      info.chip_rev, info.external_rev);
 
-                wxLogMessage("num_cu_per_sh: %d", info.num_cu_per_sh);
-                wxLogMessage("Shader Arrays per Engine: %d , Shader Engines: %d",
-                             info.num_shader_engines, info.num_shader_arrays_per_engine);
+                w << wxString::Format("num_cu_per_sh: %d\n", info.num_cu_per_sh);
 
-                wxLogMessage("cu_active_number: %d", info.cu_active_number);
-                wxLogMessage("gpu_counter_freq: %dMHz", (int)info.gpu_counter_freq / 1000);
-                wxLogMessage("max_engine_clock: %dMHz", (int)info.max_engine_clock / 1000);
-                wxLogMessage("max_memory_clock: %dMHz", (int)info.max_memory_clock / 1000);
+                w << wxString::Format("Shader Arrays per Engine: %d , Shader Engines: %d\n",
+                                      info.num_shader_engines, info.num_shader_arrays_per_engine);
+
+                w << wxString::Format("cu_active_number: %d\n", info.cu_active_number);
+                w << wxString::Format("gpu_counter_freq: %dMHz\n", (int)info.gpu_counter_freq / 1000);
+                w << wxString::Format("max_engine_clock: %dMHz\n", (int)info.max_engine_clock / 1000);
+                w << wxString::Format("max_memory_clock: %dMHz\n", (int)info.max_memory_clock / 1000);
 
                 std::string s("???");
                 switch(info.vram_type)
@@ -512,16 +513,16 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 case VRAM_TYPE_HBM: { s.assign("HBM"); } break;
                 case VRAM_TYPE_DDR3: { s.assign("DDR3"); } break;
                 }
-                wxLogMessage("VRAM Type: \"%s\"", s.c_str());
+                w << wxString::Format("VRAM Type: \"%s\"\n", s.c_str());
 
-                wxLogMessage("vram_bit_width: %d", info.vram_bit_width);
+                w << wxString::Format("vram_bit_width: %d\n", info.vram_bit_width);
 
-                wxLogMessage("ce_ram_size: %dKb", (unsigned)info.ce_ram_size / 1024);
-                wxLogMessage("num_tcc_blocks: %d", info.num_tcc_blocks);
-                wxLogMessage("gs_vgt_table_depth: %d", info.gs_vgt_table_depth);
-                wxLogMessage("gs_prim_buffer_depth: %d", info.gs_prim_buffer_depth);
-                wxLogMessage("max_gs_waves_per_vgt: %d", info.max_gs_waves_per_vgt);
-                wxLogMessage("\n");
+                w << wxString::Format("ce_ram_size: %dKb\n", (unsigned)info.ce_ram_size / 1024);
+                w << wxString::Format("num_tcc_blocks: %d\n", info.num_tcc_blocks);
+                w << wxString::Format("gs_vgt_table_depth: %d\n", info.gs_vgt_table_depth);
+                w << wxString::Format("gs_prim_buffer_depth: %d\n", info.gs_prim_buffer_depth);
+                w << wxString::Format("max_gs_waves_per_vgt: %d", info.max_gs_waves_per_vgt);
+                wxLogMessage(w);
 
             } break;
         case 3: // UVD
@@ -534,26 +535,23 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 if(p == NULL)
                     break;
 
-                wxLogMessage("Used:%d -- Max:%d", uvd.uvd_used_handles, uvd.uvd_max_handles);
-                wxLogMessage("\n");
+                wxLogMessage("UVD: Used:%d -- Max:%d\n", uvd.uvd_used_handles, uvd.uvd_max_handles);
 
             } break;
         case 4: // VCE
             {
                 unsigned char c;
                 c = amd->GetClockTable().size();
-                //wxLogMessage("VCE table entry count: %d", c);
                 wxString s;
                 s << wxString::Format("VCE table entry count: %d\n", c);
                 for(unsigned char i = 0; i < c; ++i)
-                    s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u",
+                    s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u\n",
                                           i+1,
                                           amd->GetClockTable()[i].sclk,
                                           amd->GetClockTable()[i].eclk,
                                           amd->GetClockTable()[i].mclk);
 
                 wxLogMessage(s);
-                wxLogMessage("\n");
 
             } break;
 
