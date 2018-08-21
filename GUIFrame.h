@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Feb 14 2018)
+// C++ code generated with wxFormBuilder (version Aug  4 2018)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -40,10 +40,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GUIFrame
 ///////////////////////////////////////////////////////////////////////////////
-class GUIFrame : public wxFrame 
+class GUIFrame : public wxFrame
 {
 	private:
-	
+
 	protected:
 		wxMenuBar* mbar;
 		wxMenu* fileMenu;
@@ -105,7 +105,7 @@ class GUIFrame : public wxFrame
 		wxStaticText* m_staticText_gtt;
 		wxGauge* m_gauge_gtt;
 		wxTimer m_timer1;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
@@ -130,49 +130,49 @@ class GUIFrame : public wxFrame
 		virtual void OnCpuQuery( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateVal( wxTimerEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
+
 		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("radeontop GUI"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 470,325 ), long style = wxDEFAULT_FRAME_STYLE|wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
-		
+
 		~GUIFrame();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class QueryDialog
 ///////////////////////////////////////////////////////////////////////////////
-class QueryDialog : public wxDialog 
+class QueryDialog : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxBoxSizer* bSizer2;
 		wxChoice* QchoiceRadeon;
 		wxChoice* QchoiceAMD;
 		wxTextCtrl* QtextCtrl1;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnQueryClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnQChoiceR( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnQChoiceA( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		QueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Query"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 457,363 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+
+		QueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Query"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 457,363 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~QueryDialog();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class CpuQueryDialog
 ///////////////////////////////////////////////////////////////////////////////
-class CpuQueryDialog : public wxDialog 
+class CpuQueryDialog : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxBoxSizer* topSizer;
 		wxFlexGridSizer* choiceSizer;
@@ -186,19 +186,19 @@ class CpuQueryDialog : public wxDialog
 		wxScrolledWindow* m_scrolledWindow1;
 		wxBoxSizer* scrolledSizer;
 		wxTimer timer_cpu;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnCpuDialogClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnChoiceCpuLimit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxAvg( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateCpuVal( wxTimerEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,371 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+
+		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,371 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~CpuQueryDialog();
-	
+
 };
 
 #endif //__GUIFRAME_H__
