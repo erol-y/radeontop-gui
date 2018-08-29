@@ -19,7 +19,9 @@
 #endif
 
 #include "rdt_guiMain.h"
+#include "conf.h"
 
+static ConfigFile * cfg = NULL;
 
 rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     : GUIFrame(frame)
@@ -27,8 +29,17 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     rdt = NULL;
     qd = NULL;
     msec = -1;
-    memset(&m_drm_ver, 0, sizeof(m_drm_ver));
     Sizer1Size = bSizer1->GetSize();
+
+    cfg = ConfigFile::GetConfigFile();
+    int interval;
+    cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
+    if( GetRadeontopState() )
+        mSetTimerVal(interval, true);
+    else
+        mSetTimerVal(interval);
+
+    this->SetItemsToShow();
 }
 
 rdt_guiFrame::~rdt_guiFrame()
@@ -75,11 +86,129 @@ void rdt_guiFrame::OnSize(wxSizeEvent& event)
     event.Skip();
 }
 
-void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart = false)
+void rdt_guiFrame::SetItemsToShow()
 {
-    msec = _sec;
+    bool bVal;
+
+    if(cfg == NULL)
+        return;
+
+    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED);
+
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_GUI, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_gui->Check(bVal);
+        this->OnViewStats_gui(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_EE, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_ee->Check(bVal);
+        this->OnViewStats_ee(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_VGT, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_vgt->Check(bVal);
+        this->OnViewStats_vgt(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_TA, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_ta->Check(bVal);
+        this->OnViewStats_ta(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_TC, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_tc->Check(bVal);
+        this->OnViewStats_tc(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_SX, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_sx->Check(bVal);
+        this->OnViewStats_sx(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_SH, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_sh->Check(bVal);
+        this->OnViewStats_sh(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_SPI, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_spi->Check(bVal);
+        this->OnViewStats_spi(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_SMX, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_smx->Check(bVal);
+        this->OnViewStats_smx(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_SC, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_sc->Check(bVal);
+        this->OnViewStats_sc(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_PA, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_pa->Check(bVal);
+        this->OnViewStats_pa(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_DB, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_db->Check(bVal);
+        this->OnViewStats_db(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_CB, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_cb->Check(bVal);
+        this->OnViewStats_cb(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_CR, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_cr->Check(bVal);
+        this->OnViewStats_cr(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_VRAM, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_vram->Check(bVal);
+        this->OnViewStats_vram(event);
+    }
+    if(cfg->cfgRead(ConfKeyEnums::GPU_ITEM_GTT, &bVal))
+    {
+        event.SetInt( bVal? 1 : 0 );
+        mviewstats_gtt->Check(bVal);
+        this->OnViewStats_gtt(event);
+    }
+}
+
+void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
+{
+    GUIRefreshRate * grr = new GUIRefreshRate(this);
+    int val = this->GetTimerVal();
+    grr->textCtrlRefRate->SetValue(wxString::Format("%d", val));
+    grr->Show();
+}
+
+void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
+{
+    this->msec = _sec;
     if(bStart)
         m_timer1.Start(_sec);
+
+    if(cd != NULL)
+        cd->SetTimerVal(_sec);
 }
 
 void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
@@ -180,102 +309,121 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
                                 this->Fit(); \
                                 this->Layout(); }
 
+#define SAVECONF(key) cfg->cfgWrite( key, event.IsChecked() );
 
 void rdt_guiFrame::OnViewStats_gui(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_GUI)
     _OnViewSelect(m_staticText_gui, m_gauge_gui)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_ee(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_EE)
     _OnViewSelect(m_staticText_ee, m_gauge_ee)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_vgt(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_VGT)
     _OnViewSelect(m_staticText_vgt, m_gauge_vgt)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_ta(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_TA)
     _OnViewSelect(m_staticText_ta, m_gauge_ta)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_tc(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_TC)
     _OnViewSelect(m_staticText_tc, m_gauge_tc)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sx(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_SX)
     _OnViewSelect(m_staticText_sx, m_gauge_sx)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sh(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_SH)
     _OnViewSelect(m_staticText_sh, m_gauge_sh)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_spi(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_SPI)
     _OnViewSelect(m_staticText_spi, m_gauge_spi)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_smx(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_SMX)
     _OnViewSelect(m_staticText_smx, m_gauge_smx)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sc(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_SC)
     _OnViewSelect(m_staticText_sc, m_gauge_sc)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_pa(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_PA)
     _OnViewSelect(m_staticText_pa, m_gauge_pa)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_db(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_DB)
     _OnViewSelect(m_staticText_db, m_gauge_db)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_cb(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_CB)
     _OnViewSelect(m_staticText_cb, m_gauge_cb)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_cr(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_CR)
     _OnViewSelect(m_staticText_cr, m_gauge_cr)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_vram(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_VRAM)
     _OnViewSelect(m_staticText_vram, m_gauge_vram)
     event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
 {
+    SAVECONF(ConfKeyEnums::GPU_ITEM_GTT)
     _OnViewSelect(m_staticText_gtt, m_gauge_gtt)
     event.Skip();
 }
+
+#undef SAVECONF
 #undef _OnViewSelect
 
 void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
@@ -284,12 +432,14 @@ void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
     {
         qd->Show(false);
         delete qd;
+        qd = NULL;
         mviewQuery->Check(false);
     }
     else if(wxid == cd)
     {
         cd->Show(false);
         delete cd;
+        cd = NULL;
         mviewCPU->Check(false);
     }
 }
@@ -593,8 +743,14 @@ CpuDialog::CpuDialog(wxWindow * parent)
 {
     this->rdtFrame = (rdt_guiFrame *) parent;
     this->cfq = new cputop::cpufreq();
-    this->isAvg = m_checkBox_avg->IsChecked();
     unsigned char cc = cfq->GetCpuCount();
+
+    this->timer_cpu.Start(this->rdtFrame->GetTimerVal());
+
+    cfg->cfgRead(ConfKeyEnums::CPU_GUI_SHOW_AVARAGE, &isAvg, false);
+    m_checkBox_avg->SetValue(isAvg);
+    wxCommandEvent e(wxEVT_COMMAND_CHECKBOX_CLICKED);
+    OnCheckBoxAvg(e);
 
     for(unsigned char i = 0; i < cc; ++i)
     {
@@ -614,11 +770,12 @@ CpuDialog::CpuDialog(wxWindow * parent)
         mapCPU.insert(std::make_pair(i, mapCpuWindowElements.find(st)));
     }
 
+    unsigned char x = 0;
     if(cc >= 4)
     {
         m_choice_limit->Append("4");
-        char t = cc-4;
-        unsigned char x = 2;
+        short t = cc-4;
+        x = 2;
         while( t > 0 )
         {
             m_choice_limit->Append(wxString::Format("%d", x*4));
@@ -629,8 +786,19 @@ CpuDialog::CpuDialog(wxWindow * parent)
         }
 
     }
-        m_choice_limit->SetSelection( cc >= 4? 2: 1 ); //Initial behavior: show none, if cc less than 4.
+
+    int y = 0;
+    if( cfg->cfgRead(ConfKeyEnums::CPU_GUI_LIMIT_COUNT, &y, 0) )
+    {
+        if( (unsigned char)y > x ) y = 1;
+        m_choice_limit->SetSelection(y);
         m_choice_limit->SendSelectionChangedEvent(wxEVT_COMMAND_CHOICE_SELECTED);
+    }
+    else
+    {
+        m_choice_limit->SetSelection( cc >= 4? 2: 0 ); //Initial behavior: show all, if cc less than 4.
+        m_choice_limit->SendSelectionChangedEvent(wxEVT_COMMAND_CHOICE_SELECTED);
+    }
 
 }
 
@@ -665,6 +833,7 @@ void CpuDialog::OnChoiceCpuLimit(wxCommandEvent& event)
         itr->second->second->Show();
     }
     this->Layout();
+    cfg->cfgWrite(ConfKeyEnums::CPU_GUI_LIMIT_COUNT, m_choice_limit->GetSelection());
 
     wxUnusedVar(event);
 }
@@ -687,6 +856,7 @@ void CpuDialog::OnCheckBoxAvg(wxCommandEvent& event)
         mapAvg.clear();
     }
 
+    cfg->cfgWrite(ConfKeyEnums::CPU_GUI_SHOW_AVARAGE, isAvg);
     wxUnusedVar(event);
 }
 
@@ -755,7 +925,32 @@ void CpuDialog::UpdateCpuVal(wxTimerEvent& event)
     wxUnusedVar(event);
 }
 
+void CpuDialog::SetTimerVal(int _sec)
+{
+    timer_cpu.Stop();
+    timer_cpu.Start(_sec);
+}
+
 CpuDialog::~CpuDialog()
 {
     delete cfq;
+}
+
+GUIRefreshRate::GUIRefreshRate(wxWindow * parent)
+    : DialogRR(parent)
+{
+    this->rdtFrame = (rdt_guiFrame *) parent;
+}
+
+void GUIRefreshRate::OnSetVal(wxCommandEvent& event)
+{
+    int val = 0;
+    val = wxAtoi(textCtrlRefRate->GetValue());
+    if(val > 0)
+    {
+        rdtFrame->mSetTimerVal(val);
+        cfg->cfgWrite(ConfKeyEnums::GEN_UPDATE_INTERVAL, val);
+    }
+
+    delete this;
 }

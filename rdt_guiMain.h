@@ -38,7 +38,11 @@ class rdt_guiFrame: public GUIFrame
         class radeontop::rdtop * rdt;
         radeontop::_m_drm_version m_drm_ver;
 
-        void mSetTimerVal(int, bool);
+        void SetRadeontopState(bool bState) { is_radeontop_ok = bState; }
+        bool GetRadeontopState() const      { return is_radeontop_ok; }
+        void mSetTimerVal(int, bool = false);
+        int GetTimerVal() const { return this->msec; }
+        void SetItemsToShow();
         void SetMenuPresent();
         void DestroyDialogWindow(wxDialog *);
 
@@ -59,6 +63,7 @@ class rdt_guiFrame: public GUIFrame
 
         virtual void OnSize(wxSizeEvent& event);
         virtual void UpdateVal(wxTimerEvent& event);
+        virtual void OnRefRate( wxCommandEvent& event );
 
         virtual void OnViewStats_gui(wxCommandEvent& event);
         virtual void OnViewStats_ee(wxCommandEvent& event);
@@ -89,7 +94,6 @@ class QDialog: public QueryDialog
 
     private:
         rdt_guiFrame * rdtFrame;
-        //int QueryMap[32];
 
     protected:
         virtual void OnQueryClose(wxCloseEvent& event);
@@ -100,8 +104,11 @@ class QDialog: public QueryDialog
 class CpuDialog: public CpuQueryDialog
 {
     public:
+        void SetTimerVal(int);
+
         CpuDialog(wxWindow *);
         ~CpuDialog();
+
     private:
         rdt_guiFrame * rdtFrame;
         cputop::cpufreq * cfq;
@@ -118,4 +125,18 @@ class CpuDialog: public CpuQueryDialog
         virtual void OnCpuDialogClose(wxCloseEvent& event);
         virtual void UpdateCpuVal(wxTimerEvent& event);
 };
+
+class GUIRefreshRate: public DialogRR
+{
+    public:
+        GUIRefreshRate(wxWindow *);
+        ~GUIRefreshRate() {}
+
+    private:
+        rdt_guiFrame * rdtFrame;
+
+    protected:
+        virtual void OnSetVal( wxCommandEvent& event );
+};
+
 #endif // RDT_GUIMAIN_H

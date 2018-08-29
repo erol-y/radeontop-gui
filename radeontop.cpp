@@ -1,5 +1,6 @@
 /*
 	Copyright (C) 2012 Lauri Kasanen
+	Copyright (C) 2017 Erol Yesilyurt
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -199,13 +200,13 @@ std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> m_amdgpu_info::Ge
 
         struct drm_amdgpu_info_vce_clock_table table;
         memset(&table, 0, sizeof(table));
-        struct drm_amdgpu_info i;
-        memset(&i, 0, sizeof(i));
-        i.return_pointer = (unsigned long long)&table;
-        i.return_size = sizeof(table);
-        i.query = AMDGPU_INFO_VCE_CLOCK_TABLE;
+        struct drm_amdgpu_info info;
+        memset(&info, 0, sizeof(info));
+        info.return_pointer = (unsigned long long)&table;
+        info.return_size = sizeof(table);
+        info.query = AMDGPU_INFO_VCE_CLOCK_TABLE;
 
-        drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &i, sizeof(i));
+        drmCommandWriteRead(hDRM, DRM_AMDGPU_INFO, &info, sizeof(info));
 
         for(unsigned char i = 0; i < table.num_valid_entries; ++i)
             vce_clock_table.insert(std::make_pair(i, table.entries[i]));

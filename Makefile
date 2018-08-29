@@ -55,7 +55,7 @@ else
 	OUTOBJDIR = obj/Release
 endif
 
-OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o
+OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o
 
 ifndef plain
 ifeq ($(debug), 1)
@@ -110,6 +110,8 @@ $(OUTOBJDIR)/rdt_guiMain.o: rdt_guiMain.cpp
 $(OUTOBJDIR)/ticks.o: ticks.cpp
 	$(CXX) $(CFLAGS) -c ticks.cpp -o $(OUTOBJDIR)/ticks.o
 
+$(OUTOBJDIR)/conf.o: conf.cpp
+	$(CXX) $(CFLAGS) -c conf.cpp -o $(OUTOBJDIR)/conf.o
 
 clean:
 	rm -f *.o $(OUTDIR)/$(bin) $(verh)

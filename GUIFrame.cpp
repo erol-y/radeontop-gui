@@ -27,6 +27,12 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	mbar->Append( fileMenu, wxT("&File") );
 
+	settingmenu = new wxMenu();
+	menuRefRate = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("&Refresh Rate") ) + wxT('\t') + wxT("Alt+F5"), wxEmptyString, wxITEM_NORMAL );
+	settingmenu->Append( menuRefRate );
+
+	mbar->Append( settingmenu, wxT("&Settings") );
+
 	viewmenu = new wxMenu();
 	menuview_stats = new wxMenu();
 	wxMenuItem* menuview_statsItem = new wxMenuItem( viewmenu, wxID_ANY, wxT("Stats"), wxEmptyString, wxITEM_NORMAL, menuview_stats );
@@ -36,7 +42,6 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	mviewstats_ee = new wxMenuItem( menuview_stats, wxID_ANY, wxString( wxT("Event Engine") ) , wxEmptyString, wxITEM_CHECK );
 	menuview_stats->Append( mviewstats_ee );
-	mviewstats_ee->Check( true );
 
 	mviewstats_vgt = new wxMenuItem( menuview_stats, wxID_ANY, wxString( wxT("Vertex Group") ) , wxEmptyString, wxITEM_CHECK );
 	menuview_stats->Append( mviewstats_vgt );
@@ -65,6 +70,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	mviewstats_pa = new wxMenuItem( menuview_stats, wxID_ANY, wxString( wxT("Primitive Asm.") ) , wxEmptyString, wxITEM_CHECK );
 	menuview_stats->Append( mviewstats_pa );
+	mviewstats_pa->Check( true );
 
 	mviewstats_db = new wxMenuItem( menuview_stats, wxID_ANY, wxString( wxT("Depth Block") ) , wxEmptyString, wxITEM_CHECK );
 	menuview_stats->Append( mviewstats_db );
@@ -91,7 +97,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	mviewCPU = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("CPU") ) , wxEmptyString, wxITEM_CHECK );
 	viewmenu->Append( mviewCPU );
 
-	mbar->Append( viewmenu, wxT("&view") );
+	mbar->Append( viewmenu, wxT("&View") );
 
 	helpMenu = new wxMenu();
 	wxMenuItem* menuHelpAbout;
@@ -127,10 +133,14 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	m_staticText_ee = new wxStaticText( this, wxID_ANY, wxT("Event Engine"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_ee->Wrap( -1 );
+	m_staticText_ee->Hide();
+
 	bSizer1->Add( m_staticText_ee, 0, wxALL, 5 );
 
 	m_gauge_ee = new wxGauge( this, wxID_ANY, 100, wxPoint( -1,-1 ), wxSize( -1,15 ), wxGA_HORIZONTAL );
 	m_gauge_ee->SetValue( 0 );
+	m_gauge_ee->Hide();
+
 	bSizer1->Add( m_gauge_ee, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText_vgt = new wxStaticText( this, wxID_ANY, wxT("Vertex Grouper + Tesselator"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -227,14 +237,10 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	m_staticText_pa = new wxStaticText( this, wxID_ANY, wxT("Primitive Assembly"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_pa->Wrap( -1 );
-	m_staticText_pa->Hide();
-
 	bSizer1->Add( m_staticText_pa, 0, wxALL, 5 );
 
 	m_gauge_pa = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxSize( -1,15 ), wxGA_HORIZONTAL );
 	m_gauge_pa->SetValue( 0 );
-	m_gauge_pa->Hide();
-
 	bSizer1->Add( m_gauge_pa, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText_db = new wxStaticText( this, wxID_ANY, wxT("Depth Block"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -298,6 +304,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GUIFrame::OnClose ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GUIFrame::OnSize ) );
 	fileMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ), this, menuFileQuit->GetId());
+	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnRefRate ), this, menuRefRate->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gui ), this, mviewstats_gui->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_ee ), this, mviewstats_ee->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vgt ), this, mviewstats_vgt->GetId());
@@ -450,5 +457,49 @@ CpuQueryDialog::~CpuQueryDialog()
 	m_choice_limit->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CpuQueryDialog::OnChoiceCpuLimit ), NULL, this );
 	m_checkBox_avg->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CpuQueryDialog::OnCheckBoxAvg ), NULL, this );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( CpuQueryDialog::UpdateCpuVal ) );
+
+}
+
+DialogRR::DialogRR( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
+
+	textCtrlRefRate = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( textCtrlRefRate, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_staticText20 = new wxStaticText( this, wxID_ANY, wxT("milisecond"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText20->Wrap( -1 );
+	bSizer7->Add( m_staticText20, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	buttonSet = new wxButton( this, wxID_ANY, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( buttonSet, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer6->Add( bSizer7, 1, wxEXPAND, 5 );
+
+	m_staticText23 = new wxStaticText( this, wxID_ANY, wxT("(1 second = 1000 msecond)\nLess value = more CPU cycles"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText23->Wrap( -1 );
+	bSizer6->Add( m_staticText23, 0, wxALL, 5 );
+
+
+	this->SetSizer( bSizer6 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	buttonSet->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogRR::OnSetVal ), NULL, this );
+}
+
+DialogRR::~DialogRR()
+{
+	// Disconnect Events
+	buttonSet->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogRR::OnSetVal ), NULL, this );
 
 }

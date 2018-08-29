@@ -18,6 +18,7 @@
 #define RDT_GUIAPP_H
 
 #include <wx/app.h>
+#include "conf.h"
 #include "rdt_guiMain.h"
 #include "radeontop.h"
 
@@ -30,6 +31,7 @@ class rdt_guiApp : public wxApp
 
     public:
         virtual bool OnInit();
+        virtual int OnExit();
 
 };
 

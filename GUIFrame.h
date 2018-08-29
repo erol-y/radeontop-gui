@@ -31,6 +31,7 @@
 #include <wx/checkbox.h>
 #include <wx/statline.h>
 #include <wx/scrolwin.h>
+#include <wx/button.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +48,8 @@ class GUIFrame : public wxFrame
 	protected:
 		wxMenuBar* mbar;
 		wxMenu* fileMenu;
+		wxMenu* settingmenu;
+		wxMenuItem* menuRefRate;
 		wxMenu* viewmenu;
 		wxMenu* menuview_stats;
 		wxMenuItem* mviewstats_gui;
@@ -110,6 +113,7 @@ class GUIFrame : public wxFrame
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRefRate( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_gui( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_ee( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_vgt( wxCommandEvent& event ) { event.Skip(); }
@@ -198,6 +202,30 @@ class CpuQueryDialog : public wxDialog
 
 		CpuQueryDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPU"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,371 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~CpuQueryDialog();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class DialogRR
+///////////////////////////////////////////////////////////////////////////////
+class DialogRR : public wxDialog
+{
+	private:
+
+	protected:
+		wxStaticText* m_staticText20;
+		wxButton* buttonSet;
+		wxStaticText* m_staticText23;
+
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnSetVal( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+		wxTextCtrl* textCtrlRefRate;
+
+		DialogRR( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Set Refresh Rate"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 255,124 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~DialogRR();
 
 };
 

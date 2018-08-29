@@ -24,6 +24,8 @@ IMPLEMENT_APP(rdt_guiApp);
 
 bool rdt_guiApp::OnInit()
 {
+    ConfigFile * conf = ConfigFile::OnInit();
+
     frame = new rdt_guiFrame(0L);
     frame->Show();
 
@@ -31,15 +33,22 @@ bool rdt_guiApp::OnInit()
     frame->rdt = rdt;
     if(!rdt->init_rdtop())
     {
+        frame->SetRadeontopState(false);
         frame->SetStatusText(_T("Radeontop not initialized!"), 0);
         return true;
     }
 
     rdt->get_drm_version(&frame->m_drm_ver);
     frame->SetMenuPresent();
-    frame->mSetTimerVal(500, true);
 
 
     return true;
 }
 
+int rdt_guiApp::OnExit()
+{
+    if(ConfigFile::GetConfigFile() != NULL)
+        ConfigFile::GetConfigFile()->OnExit();
+
+    return 0;
+}

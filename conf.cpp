@@ -1,0 +1,60 @@
+/*
+	Copyright (C) 2018 Erol Yesilyurt
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 3 of the License.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "conf.h"
+
+static ConfigFile * conf_file = NULL;
+
+
+ConfigFile * ConfigFile::OnInit(const wxString& _name, const wxString& _path)
+{
+    ConfigFile * cfg;
+    wxString * file;
+
+    if(_path == wxEmptyString)
+        file = new wxString(CONFIGFILE_DEF_PATH);
+    else
+        file = new wxString(_path);
+
+    if(wxFileName::DirExists(file->data()) == false)
+        wxFileName::Mkdir(file->data());
+
+    if(_name ==wxEmptyString)
+        file->append(CONFIGFILE_DEF_NAME);
+    else
+        file->append(_name);
+
+    cfg = new ConfigFile(file->data());
+
+    return cfg;
+}
+
+ConfigFile::ConfigFile( const wxString& _file )
+    :wxFileConfig(wxEmptyString, wxEmptyString, _file)
+{
+    conf_file = this;
+    //this->SetRecordDefaults();
+}
+
+ConfigFile::~ConfigFile()
+{
+    conf_file = NULL;
+}
+
+ConfigFile * ConfigFile::GetConfigFile()
+{
+    return conf_file;
+}
