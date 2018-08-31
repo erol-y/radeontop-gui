@@ -32,6 +32,22 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     Sizer1Size = bSizer1->GetSize();
 
     cfg = ConfigFile::GetConfigFile();
+    /*int interval;
+    cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
+    if( GetRadeontopState() )
+        mSetTimerVal(interval, true);
+    else
+        mSetTimerVal(interval);
+
+    this->SetItemsToShow();*/
+}
+
+rdt_guiFrame::~rdt_guiFrame()
+{
+}
+
+void rdt_guiFrame::GetReady()
+{
     int interval;
     cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
     if( GetRadeontopState() )
@@ -39,11 +55,8 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     else
         mSetTimerVal(interval);
 
+    this->SetMenuPresent();
     this->SetItemsToShow();
-}
-
-rdt_guiFrame::~rdt_guiFrame()
-{
 }
 
 void rdt_guiFrame::SetMenuPresent()
@@ -202,7 +215,7 @@ void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
 }
 
 void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
-{
+{std::cout<<__FUNCTION__<<": "<<_sec<<bStart?"TRUE\n":"FALSE\n";
     this->msec = _sec;
     if(bStart)
         m_timer1.Start(_sec);

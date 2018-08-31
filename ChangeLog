@@ -1,3 +1,14 @@
+2018-08-31 v1.5.0-1 (erol-y)
+ * Fix critical bug to prevent GUI reads GPU registers.
+
+2018-08-29 v1.5.0 (erol-y)
+ * New Version (BETA)
+ * (NEW) Saving preferences into configuration file. (Thanks to wxFileConfig)
+ * Adjustable timer for main frame & cpu window.
+ * New menu item ("Settings").
+ * New dialog window under "Settings" to adjust refresh rate. (wxTimer input)
+ * Some minor changes.
+
 2018-04-20 v1.4.0 (erol-y)
  * Cpu frequency window has been re-designed.
 

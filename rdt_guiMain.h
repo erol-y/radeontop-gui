@@ -38,6 +38,7 @@ class rdt_guiFrame: public GUIFrame
         class radeontop::rdtop * rdt;
         radeontop::_m_drm_version m_drm_ver;
 
+        void GetReady();
         void SetRadeontopState(bool bState) { is_radeontop_ok = bState; }
         bool GetRadeontopState() const      { return is_radeontop_ok; }
         void mSetTimerVal(int, bool = false);
