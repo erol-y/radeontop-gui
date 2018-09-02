@@ -204,6 +204,8 @@ void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
     int val = this->GetTimerVal();
     grr->textCtrlRefRate->SetValue(wxString::Format("%d", val));
     grr->Show();
+
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
@@ -597,6 +599,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
 
 void QDialog::OnQChoiceA(wxCommandEvent& event)
 {
+#ifdef ENABLE_AMDGPU
     class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->rdt->get_drm_handle());
 
     /**TODO: Edit labels as readable as much */
@@ -713,6 +716,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
     }
 
     delete amd;
+#endif // ENABLE_AMDGPU
     wxUnusedVar(event);
 }
 
@@ -958,4 +962,5 @@ void GUIRefreshRate::OnSetVal(wxCommandEvent& event)
     }
 
     delete this;
+    wxUnusedVar(event);
 }

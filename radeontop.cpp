@@ -119,6 +119,8 @@ int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
 
 }
 
+#ifdef ENABLE_AMDGPU
+
 /**
     If subquery greater than zero (single mode), function returns queried value.
     Else, first parameter (pointer to struct) not null, it fills struct's elements
@@ -225,6 +227,6 @@ m_amdgpu_info::m_amdgpu_info(int handle)
 m_amdgpu_info::~m_amdgpu_info()
 {
 }
-
+#endif // ENABLE_AMDGPU
 }
 

@@ -89,8 +89,6 @@ typedef struct drm_amdgpu_info_num_handles amdgpu_uvd_handles;
 #define VRAM_TYPE_HBM       AMDGPU_VRAM_TYPE_HBM
 #define VRAM_TYPE_DDR3      AMDGPU_VRAM_TYPE_DDR3
 
-#endif // ENABLE_AMDGPU
-
 struct m_amdgpu_sensor
 {
     unsigned int gfx_sclk;
@@ -115,13 +113,6 @@ struct m_amdgpu_sensor
 
 };
 
-struct _m_drm_version
-{
-    int version_major;
-    int version_minor;
-    int version_patchlevel;
-};
-
 class m_amdgpu_info
 {
 public:
@@ -137,6 +128,14 @@ private:
     int hDRM;
     std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> vce_clock_table;
 
+};
+#endif // ENABLE_AMDGPU
+
+struct _m_drm_version
+{
+    int version_major;
+    int version_minor;
+    int version_patchlevel;
 };
 
 class rdtop
