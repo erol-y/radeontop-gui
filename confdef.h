@@ -23,6 +23,8 @@
 enum ConfKeyEnums
     {
         GEN_UPDATE_INTERVAL = 0,    //int
+        GEN_SIZER_X,                //int
+        GEN_SIZER_Y,                //int
         GPU_ITEM_GUI,               //bool
         GPU_ITEM_EE,                // "
         GPU_ITEM_VGT,
@@ -40,10 +42,14 @@ enum ConfKeyEnums
         GPU_ITEM_VRAM,
         GPU_ITEM_GTT,
         CPU_GUI_LIMIT_COUNT,        //int
-        CPU_GUI_SHOW_AVARAGE        //bool
+        CPU_GUI_SHOW_AVARAGE,       //bool
+        CPU_GUI_SIZER_X,            //int
+        CPU_GUI_SIZER_Y             //int
     };
 
 static const wchar_t* ConfKeys[] = {wxT("GENERAL/update-interval"),
+                                    wxT("GENERAL/frameX"),
+                                    wxT("GENERAL/frameY"),
                                     wxT("GPU/gui"),
                                     wxT("GPU/ee"),
                                     wxT("GPU/vgt"),
@@ -61,8 +67,9 @@ static const wchar_t* ConfKeys[] = {wxT("GENERAL/update-interval"),
                                     wxT("GPU/vram"),
                                     wxT("GPU/gtt"),
                                     wxT("CPU/limit-count"),
-                                    wxT("CPU/show-avarage")
+                                    wxT("CPU/show-avarage"),
+                                    wxT("CPU/frameX"),
+                                    wxT("CPU/frameY")
                                     };
-
 
 #endif // CONFDEF_H_INCLUDED

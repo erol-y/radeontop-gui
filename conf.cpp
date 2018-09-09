@@ -16,12 +16,10 @@
 
 #include "conf.h"
 
-static ConfigFile * conf_file = NULL;
-
+static ConfigFile * conf = NULL;
 
 ConfigFile * ConfigFile::OnInit(const wxString& _name, const wxString& _path)
 {
-    ConfigFile * cfg;
     wxString * file;
 
     if(_path == wxEmptyString)
@@ -37,24 +35,25 @@ ConfigFile * ConfigFile::OnInit(const wxString& _name, const wxString& _path)
     else
         file->append(_name);
 
-    cfg = new ConfigFile(file->data());
+    conf = new ConfigFile(file->data());
 
-    return cfg;
+    return conf;
 }
 
 ConfigFile::ConfigFile( const wxString& _file )
     :wxFileConfig(wxEmptyString, wxEmptyString, _file)
 {
-    conf_file = this;
+    conf = this;
+    bSave = true;
     //this->SetRecordDefaults();
 }
 
 ConfigFile::~ConfigFile()
 {
-    conf_file = NULL;
+    conf = NULL;
 }
 
 ConfigFile * ConfigFile::GetConfigFile()
 {
-    return conf_file;
+    return conf;
 }

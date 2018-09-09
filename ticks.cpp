@@ -21,12 +21,12 @@
 namespace radeontop {
 
 struct bits_t *results = NULL;
-rdtop * pClass = NULL;
+static rdtop * pClass = NULL;
 
 void * rdtop::collector(void *arg)
 {
     if(pClass == NULL)
-        return NULL;
+        { return NULL; }
 
 	const unsigned int ticks = * ((unsigned int *) arg);
 

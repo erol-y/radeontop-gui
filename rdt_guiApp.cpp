@@ -24,8 +24,6 @@ IMPLEMENT_APP(rdt_guiApp);
 
 bool rdt_guiApp::OnInit()
 {
-    ConfigFile * conf = ConfigFile::OnInit();
-
     frame = new rdt_guiFrame(0L);
     frame->Show();
 
@@ -41,8 +39,9 @@ bool rdt_guiApp::OnInit()
     {
         frame->SetRadeontopState(true);
         rdt->get_drm_version(&frame->m_drm_ver);
-        frame->GetReady();
     }
+
+    frame->GetReady();
 
     return true;
 }

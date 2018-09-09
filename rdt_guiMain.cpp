@@ -29,13 +29,20 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     rdt = NULL;
     qd = NULL;
     msec = -1;
-    Sizer1Size = bSizer1->GetSize();
 
     cfg = ConfigFile::GetConfigFile();
+    if(cfg == NULL)
+        { cfg = ConfigFile::OnInit(); }
 }
 
 rdt_guiFrame::~rdt_guiFrame()
 {
+    wxSize s = bSizer1->GetMinSize();
+    if(ConfigFile::GetConfigFile() != NULL)
+    {
+        cfg->cfgWrite( ConfKeyEnums::GEN_SIZER_X, s.GetX() );
+        cfg->cfgWrite( ConfKeyEnums::GEN_SIZER_Y, s.GetY() );
+    }
 }
 
 void rdt_guiFrame::GetReady()
@@ -43,11 +50,22 @@ void rdt_guiFrame::GetReady()
     int interval;
     cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
     if( GetRadeontopState() )
+    {
         mSetTimerVal(interval, true);
+        this->SetMenuPresent();
+    }
     else
+    {
         mSetTimerVal(interval);
+    }
 
-    this->SetMenuPresent();
+    int x, y;
+    cfg->cfgRead(ConfKeyEnums::GEN_SIZER_X, &x, 470);
+    cfg->cfgRead(ConfKeyEnums::GEN_SIZER_Y, &y, 325);
+    bSizer1->SetMinSize(x, y);
+    this->Fit();
+    this->Layout();
+
     this->SetItemsToShow();
 }
 
@@ -87,8 +105,10 @@ void rdt_guiFrame::OnAbout(wxCommandEvent &event)
 
 void rdt_guiFrame::OnSize(wxSizeEvent& event)
 {
-    Sizer1Size = bSizer1->GetSize();
-    event.Skip();
+    bSizer1->SetMinSize(GetSize().GetWidth(), -1);
+    this->Fit();
+    this->Layout();
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::SetItemsToShow()
@@ -208,6 +228,38 @@ void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
     wxUnusedVar(event);
 }
 
+void rdt_guiFrame::OnMenuSaveExit(wxCommandEvent& event)
+{
+    cfg->bSave = event.IsChecked();
+}
+
+void rdt_guiFrame::OnMenuReset(wxCommandEvent& event)
+{
+    this->Show(false);
+
+    wxCloseEvent ev;
+
+    if(this->mviewQuery->IsChecked())
+    {
+        this->mviewQuery->Check(false);
+        qd->OnQueryClose(ev);
+    }
+
+    if(this->mviewCPU->IsChecked())
+    {
+        this->mviewCPU->Check(false);
+        cd->OnCpuDialogClose(ev);
+    }
+
+    if(cfg != NULL)
+    {
+        cfg->ResetConf();
+    }
+
+    this->GetReady();
+    this->Show(true);
+}
+
 void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
 {
     this->msec = _sec;
@@ -298,23 +350,27 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
 
 
     statusBar->SetStatusText(wxString::Format("core: %dMhz / vmem: %dMhz",
-                                              (int)radeontop::results->sclk, (int)radeontop::results->mclk),1);
-
+                                              (int)radeontop::results->sclk,
+                                              (int)radeontop::results->mclk),1);
     event.Skip();
 }
 
-#define _OnViewSelect(a,b) if(event.IsChecked()) \
-                                { a->Show(); \
-                                b->Show(); \
-                                bSizer1->SetMinSize(Sizer1Size.GetWidth(), -1); \
-                                this->Fit(); \
-                                this->Layout(); } \
-                            else if(!event.IsChecked()) \
-                                { a->Show(false); \
-                                b->Show(false); \
-                                bSizer1->SetMinSize(Sizer1Size.GetWidth(), -1); \
-                                this->Fit(); \
-                                this->Layout(); }
+#define _OnViewSelect(a,b) if(event.IsChecked())                                \
+                            {   a->SetSize(GetSize().GetWidth(), -1);          \
+                                b->SetSize(GetSize().GetWidth(), -1);          \
+                                a->Show();                                      \
+                                b->Show();                                      \
+                                bSizer1->SetMinSize(GetSize().GetWidth(), -1);  \
+                                this->Fit();                                    \
+                                this->Layout();                                 \
+                            }                                                   \
+                            else if(!event.IsChecked())                         \
+                            {   a->Show(false);                                 \
+                                b->Show(false);                                 \
+                                bSizer1->SetMinSize(GetSize().GetWidth(), -1);  \
+                                this->Fit();                                    \
+                                this->Layout();                                 \
+                            }
 
 #define SAVECONF(key) cfg->cfgWrite( key, event.IsChecked() );
 
@@ -322,49 +378,42 @@ void rdt_guiFrame::OnViewStats_gui(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_GUI)
     _OnViewSelect(m_staticText_gui, m_gauge_gui)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_ee(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_EE)
     _OnViewSelect(m_staticText_ee, m_gauge_ee)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_vgt(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_VGT)
     _OnViewSelect(m_staticText_vgt, m_gauge_vgt)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_ta(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_TA)
     _OnViewSelect(m_staticText_ta, m_gauge_ta)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_tc(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_TC)
     _OnViewSelect(m_staticText_tc, m_gauge_tc)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sx(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_SX)
     _OnViewSelect(m_staticText_sx, m_gauge_sx)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sh(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_SH)
     _OnViewSelect(m_staticText_sh, m_gauge_sh)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_spi(wxCommandEvent& event)
@@ -378,56 +427,48 @@ void rdt_guiFrame::OnViewStats_smx(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_SMX)
     _OnViewSelect(m_staticText_smx, m_gauge_smx)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_sc(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_SC)
     _OnViewSelect(m_staticText_sc, m_gauge_sc)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_pa(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_PA)
     _OnViewSelect(m_staticText_pa, m_gauge_pa)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_db(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_DB)
     _OnViewSelect(m_staticText_db, m_gauge_db)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_cb(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_CB)
     _OnViewSelect(m_staticText_cb, m_gauge_cb)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_cr(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_CR)
     _OnViewSelect(m_staticText_cr, m_gauge_cr)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_vram(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_VRAM)
     _OnViewSelect(m_staticText_vram, m_gauge_vram)
-    event.Skip();
 }
 
 void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
 {
     SAVECONF(ConfKeyEnums::GPU_ITEM_GTT)
     _OnViewSelect(m_staticText_gtt, m_gauge_gtt)
-    event.Skip();
 }
 
 #undef SAVECONF
@@ -435,16 +476,17 @@ void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
 
 void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
 {
+    if(wxid == NULL)
+        { return; }
+
     if(wxid == qd)
     {
-        qd->Show(false);
         delete qd;
         qd = NULL;
         mviewQuery->Check(false);
     }
     else if(wxid == cd)
     {
-        cd->Show(false);
         delete cd;
         cd = NULL;
         mviewCPU->Check(false);
@@ -454,26 +496,22 @@ void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
 /********************************************************/
 void rdt_guiFrame::OnQuery(wxCommandEvent& event)
 {
-    if(event.IsChecked())
+    if(event.IsChecked() == true)
     {
         this->qd = new QDialog(this);
         qd->Show(true);
     }
-    else if(!event.IsChecked())
+    else //if(event.IsChecked() == false)
     {
-        qd->Show(false);
-        delete qd;
-        this->mviewQuery->Check(false);
+        this->DestroyDialogWindow(this->qd);
     }
-
-    event.Skip();
 }
 
 
 QDialog::QDialog(wxWindow * parent)
     : QueryDialog(parent)
 {
-    rdtFrame = (rdt_guiFrame *) parent;
+    this->rdtFrame = (rdt_guiFrame *) parent;
     wxLog::SetActiveTarget(new wxLogTextCtrl(QtextCtrl1));
 
     wxLogMessage("Bus: %s", rdtFrame->rdt->get_str_busid());
@@ -723,22 +761,15 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
 /********************************************************/
 void rdt_guiFrame::OnCpuQuery(wxCommandEvent& event)
 {
-    if(event.IsChecked())
+    if(event.IsChecked() == true)
     {
         this->cd = new CpuDialog(this);
         cd->Show();
     }
-    else if(!event.IsChecked())
+    else //if(!event.IsChecked())
     {
-        cd->Show(false);
-        delete cd;
-        this->mviewCPU->Check(false);
+        this->DestroyDialogWindow(this->cd);
     }
-    else
-    {
-        event.Skip();
-    }
-
 }
 
 void CpuDialog::OnCpuDialogClose(wxCloseEvent& event)
@@ -760,6 +791,15 @@ CpuDialog::CpuDialog(wxWindow * parent)
     m_checkBox_avg->SetValue(isAvg);
     wxCommandEvent e(wxEVT_COMMAND_CHECKBOX_CLICKED);
     OnCheckBoxAvg(e);
+
+    int width, height;
+    if( cfg->cfgRead(ConfKeyEnums::CPU_GUI_SIZER_X, &width) &&
+        cfg->cfgRead(ConfKeyEnums::CPU_GUI_SIZER_Y, &height) )
+    {
+        this->SetSize(width, height);
+
+        m_scrolledWindow1->Layout();
+    }
 
     for(unsigned char i = 0; i < cc; ++i)
     {
@@ -942,8 +982,16 @@ void CpuDialog::SetTimerVal(int _sec)
 
 CpuDialog::~CpuDialog()
 {
+    wxSize s = this->GetSize();
+    if(ConfigFile::GetConfigFile() != NULL)
+    {
+        cfg->cfgWrite(ConfKeyEnums::CPU_GUI_SIZER_X, s.GetX());
+        cfg->cfgWrite(ConfKeyEnums::CPU_GUI_SIZER_Y, s.GetY());
+    }
     delete cfq;
 }
+
+/********************************************************/
 
 GUIRefreshRate::GUIRefreshRate(wxWindow * parent)
     : DialogRR(parent)

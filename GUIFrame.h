@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Aug  4 2018)
+// C++ code generated with wxFormBuilder (version Sep  6 2018)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __GUIFRAME_H__
-#define __GUIFRAME_H__
+#pragma once
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
@@ -50,6 +49,7 @@ class GUIFrame : public wxFrame
 		wxMenu* fileMenu;
 		wxMenu* settingmenu;
 		wxMenuItem* menuRefRate;
+		wxMenuItem* mSettingsSave;
 		wxMenu* viewmenu;
 		wxMenu* menuview_stats;
 		wxMenuItem* mviewstats_gui;
@@ -114,6 +114,8 @@ class GUIFrame : public wxFrame
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRefRate( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuSaveExit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuReset( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_gui( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_ee( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_vgt( wxCommandEvent& event ) { event.Skip(); }
@@ -229,4 +231,3 @@ class DialogRR : public wxDialog
 
 };
 
-#endif //__GUIFRAME_H__

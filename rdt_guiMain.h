@@ -53,7 +53,6 @@ class rdt_guiFrame: public GUIFrame
     private:
         int msec;
         bool is_radeontop_ok;
-        wxSize Sizer1Size;
 
         class QDialog * qd;
         class CpuDialog * cd;
@@ -64,7 +63,9 @@ class rdt_guiFrame: public GUIFrame
 
         virtual void OnSize(wxSizeEvent& event);
         virtual void UpdateVal(wxTimerEvent& event);
-        virtual void OnRefRate( wxCommandEvent& event );
+        virtual void OnRefRate(wxCommandEvent& event);
+        virtual void OnMenuSaveExit(wxCommandEvent& event);
+        virtual void OnMenuReset(wxCommandEvent& event);
 
         virtual void OnViewStats_gui(wxCommandEvent& event);
         virtual void OnViewStats_ee(wxCommandEvent& event);
@@ -93,11 +94,12 @@ class QDialog: public QueryDialog
         QDialog(wxWindow *);
         ~QDialog();
 
+        virtual void OnQueryClose(wxCloseEvent& event);
+
     private:
         rdt_guiFrame * rdtFrame;
 
     protected:
-        virtual void OnQueryClose(wxCloseEvent& event);
         virtual void OnQChoiceR(wxCommandEvent& event);
         virtual void OnQChoiceA(wxCommandEvent& event);
 };
@@ -109,6 +111,8 @@ class CpuDialog: public CpuQueryDialog
 
         CpuDialog(wxWindow *);
         ~CpuDialog();
+
+        virtual void OnCpuDialogClose(wxCloseEvent& event);
 
     private:
         rdt_guiFrame * rdtFrame;
@@ -123,7 +127,6 @@ class CpuDialog: public CpuQueryDialog
     protected:
         virtual void OnChoiceCpuLimit(wxCommandEvent& event);
         virtual void OnCheckBoxAvg(wxCommandEvent& event);
-        virtual void OnCpuDialogClose(wxCloseEvent& event);
         virtual void UpdateCpuVal(wxTimerEvent& event);
 };
 

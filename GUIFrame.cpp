@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Aug  4 2018)
+// C++ code generated with wxFormBuilder (version Sep  6 2018)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -28,8 +28,18 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	mbar->Append( fileMenu, wxT("&File") );
 
 	settingmenu = new wxMenu();
-	menuRefRate = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("&Refresh Rate") ) + wxT('\t') + wxT("Alt+F5"), wxEmptyString, wxITEM_NORMAL );
+	menuRefRate = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("&Refresh Rate") ) , wxEmptyString, wxITEM_NORMAL );
 	settingmenu->Append( menuRefRate );
+
+	settingmenu->AppendSeparator();
+
+	mSettingsSave = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("Save On Exit") ) , wxEmptyString, wxITEM_CHECK );
+	settingmenu->Append( mSettingsSave );
+	mSettingsSave->Check( true );
+
+	wxMenuItem* mSettingsReset;
+	mSettingsReset = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("Reset GUI") ) , wxEmptyString, wxITEM_NORMAL );
+	settingmenu->Append( mSettingsReset );
 
 	mbar->Append( settingmenu, wxT("&Settings") );
 
@@ -108,7 +118,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 
 	this->SetMenuBar( mbar );
 
-	statusBar = this->CreateStatusBar( 2, 0, wxID_ANY );
+	statusBar = this->CreateStatusBar( 2, wxSTB_ELLIPSIZE_MIDDLE|wxSTB_SHOW_TIPS|wxSTB_SIZEGRIP, wxID_ANY );
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 
 	m_staticText_gpu_load = new wxStaticText( this, wxID_ANY, wxT("GPU Load"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -305,6 +315,8 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GUIFrame::OnSize ) );
 	fileMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ), this, menuFileQuit->GetId());
 	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnRefRate ), this, menuRefRate->GetId());
+	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnMenuSaveExit ), this, mSettingsSave->GetId());
+	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnMenuReset ), this, mSettingsReset->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gui ), this, mviewstats_gui->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_ee ), this, mviewstats_ee->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_vgt ), this, mviewstats_vgt->GetId());

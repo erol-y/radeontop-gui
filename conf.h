@@ -26,8 +26,6 @@
 #endif // _FILECONF_H
 
 #include "confdef.h"
-#include <iostream>
-
 
 class ConfigFile: public wxFileConfig
 {
@@ -39,6 +37,11 @@ public:
 
     static ConfigFile * GetConfigFile();
 
+    bool ResetConf()
+        { return DeleteAll(); }
+
+    bool bSave;
+
 private:
     ConfigFile( const wxString& );
     ~ConfigFile();
@@ -47,8 +50,12 @@ public:
     template <typename T>
     bool cfgWrite( ConfKeyEnums key, T value )
     {
-        wxString s( ConfKeys[key] );
-        return Write( s, value );
+        if(bSave)
+        {
+            wxString s( ConfKeys[key] );
+            return Write( s, value );
+        }
+        return false;
     }
 
     template <typename T>
