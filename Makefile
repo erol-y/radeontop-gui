@@ -5,20 +5,25 @@
 #	amdgpu	enable amdgpu VRAM size and usage reporting, default off
 #		because amdgpu requires libdrm >= 2.4.63
 #   (*) 30 Sep 2017 For default, amdgpu is on
+#
+#	deskfile install GNOME .desktop file (default = 0).
 
 PREFIX ?= usr
 INSTALL ?= install
 LIBDIR ?= lib
+DOT_DESKTOP ?= share/applications
 
 CXX = g++
 LD = g++
 
 debug ?= 0
 amdgpu ?= 1
+deskfile ?= 0
 
 bin = radeontop-gui
 binstall = radeontop-gui.v1
 scrpt = radeontop-gui
+gdesktop = radeontop-gui.desktop
 src = $(filter-out ,$(wildcard *.cpp))
 obj = $(src:.c=.o)
 verh = version.h
@@ -131,22 +136,18 @@ $(OUTDIR): .outbin
 $(OUTOBJDIR): .outbin
 	test -d $(OUTOBJDIR) || mkdir -p $(OUTOBJDIR)
 
-install: all
+install: uninstall all
 	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
 	$(INSTALL) -D -m755 $(scrpt) $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
+ifeq ($(deskfile), 1)
+	$(INSTALL) -D -m644 $(CURDIR)/debian/$(gdesktop) $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
+endif
 
 uninstall:
 	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
 	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
+	-rm -f $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
 
 dist: ver = $(shell git describe)
 dist: name = $(bin)-$(ver)
 dist: clean $(verh)
-	sed -i '/\t\.\/getver.sh/d' Makefile
-	cd .. && \
-	ln -s $(bin) $(name) && \
-	tar -h --numeric-owner --exclude-vcs -cvf - $(name) | pigz -9 > /tmp/$(name).tgz && \
-	rm $(name)
-	advdef -z4 /tmp/$(name).tgz
-	git checkout Makefile
-	cd /tmp && sha1sum $(name).tgz > $(name).tgz.sha1

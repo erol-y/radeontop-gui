@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Erol Yesilyurt <erolyslyrt@gmail.com>
 Build-Depends: debhelper (>= 9)
  , libpciaccess-dev
- , libcpufreq-dev ( >= 008-1)
+ , libcpufreq-dev ( >= 001)
  , pkg-config
  , libdrm-dev (>= 2.4.63)
  , libwxgtk3.0-dev
@@ -16,6 +16,8 @@ Package: radeontop-gui
 Architecture: any
 Depends: ${shlibs:Depends}
  , ${misc:Depends}
+ , libpciaccess0
+ , libdrm2
  , libcpufreq0
  , libwxgtk3.0-0v5
 Description: Utility to show Radeon GPU utilization

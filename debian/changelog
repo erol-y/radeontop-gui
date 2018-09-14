@@ -1,3 +1,20 @@
+radeontop-gui (1.5.1-2) trusty; urgency=medium
+
+  * Added "deskfile" option into Makefile.
+  * Makefile now uninstalls installed one before new installation.
+  * Debian related files updated.
+  * debian/control exports "deskfile=1" to Makefile.
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com>  Fri, 14 Sep 2018 06:18:30 +0300
+
+radeontop-gui (1.5.1) trusty; urgency=medium
+
+  * New, menu sub-item under "Settings"; "Save On Exit" & "Reset Config".
+  * Main window and cpu window are able to save & load window sizes.
+  * Internal changes, bug fixing, improvements etc...
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com>  Sun, 09 Sep 2018 18:00:30 +0300
+
 radeontop-gui (1.4.1) trusty; urgency=medium
 
   * Let Makefile to store object files into "obj/" folder

@@ -2,6 +2,13 @@ You will need DRM, pciaccess, cpufreq and wxwidgets libraries to compile the pro
 Code::Blocks and wxFormBuilder project files are included.
 Also, you can use "make" to build.
 
-"make" has two arguments; debug (default off) and amdgpu (default on).
+Makefile has three arguments; debug (default off) , amdgpu (default on) , deskfile (default off).
 example:
-"./make" --> equals to "./make debug=0 amdgpu=1"
+
+`make` equals to `make debug=0 amdgpu=1`
+
+To install gnome desktop shurtcut, set deskfile=1 while installing proccess.
+Be root and run;
+
+make deskfile=1 install
+
