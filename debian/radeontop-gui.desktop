@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Radeontop GUI
+GenericName=View your GPU utilization
+Comment=GUI for radeontop
+Exec=radeontop-gui -i -x -r
+Terminal=true
+X-MultipleArgs=false
+Categories=Utility;
+StartupNotify=true
