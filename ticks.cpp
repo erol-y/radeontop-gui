@@ -21,14 +21,14 @@
 namespace radeontop {
 
 struct bits_t *results = NULL;
-static rdtop * pClass = NULL;
 
-void * rdtop::collector(void *arg)
+void * rdtop::collector(void * p)
 {
-    if(pClass == NULL)
+    if(p == NULL)
         { return NULL; }
 
-	const unsigned int ticks = * ((unsigned int *) arg);
+    rdtop * pClass = (rdtop *)p;
+    const unsigned int ticks = pClass->get_ticks();
 
 	struct bits_t res[2];
 
@@ -103,10 +103,8 @@ void * rdtop::collector(void *arg)
 
 }
 
-void rdtop::collect(unsigned int *mticks, void * mthis)
+void rdtop::collect()
 {
-    pClass = (rdtop *)mthis;
-
 	// Start a thread collecting data
 	pthread_t tid;
 	pthread_attr_t attr;
@@ -115,7 +113,7 @@ void rdtop::collect(unsigned int *mticks, void * mthis)
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-	pthread_create(&tid, &attr, collector, mticks);
+	pthread_create(&tid, &attr, collector, this);
 }
 
 }

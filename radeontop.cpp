@@ -28,7 +28,7 @@ rdtop::rdtop()
     use_ioctl = 0;
     drm_fd = 0;
     family = 0;
-    ticks = 120;
+    Ticks = 120;
     m_err = false;
 
 }
@@ -57,7 +57,7 @@ bool rdtop::init_rdtop()
     }
 
     initbits(family);
-    collect(&ticks, this);
+    collect();
 
     while(!results)
 		usleep(16000);

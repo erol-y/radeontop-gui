@@ -146,7 +146,8 @@ class rdtop
 
         bool haserror() const;
         bool init_rdtop();
-        int get_ticks() { return ticks; }
+        void set_ticks(unsigned int t) { (t > 10UL)&&(t < 1000UL) ? Ticks = t : Ticks = 120UL; }
+        int get_ticks() { return Ticks; }
         struct bits_t get_bits() const { return bits; }
         int get_drm_handle() const { return drm_fd; }
         const char * get_drm_name() const { return drm_name; }
@@ -181,19 +182,17 @@ class rdtop
         char drm_name[10];
         int use_ioctl;
 
-        //radeon.cpp
+        //radeontop.cpp
         int get_drm_value(int, unsigned, uint32_t *);
-        //unsigned int readgrbm2();
-        unsigned int ticks;
+        unsigned int Ticks;
         const void * area;
         int family;
-        //char * cardname;
 
         //auth.cpp
         void authenticate_drm(int);
 
         //ticks.cpp
-        void collect(unsigned int *, void *);
+        void collect();
         static void * collector(void *);
 
 };
