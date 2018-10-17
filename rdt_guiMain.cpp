@@ -33,6 +33,8 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     cfg = ConfigFile::GetConfigFile();
     if(cfg == NULL)
         { cfg = ConfigFile::OnInit(); }
+
+    rdt = new radeontop::rdtop();
 }
 
 rdt_guiFrame::~rdt_guiFrame()
@@ -49,14 +51,19 @@ void rdt_guiFrame::GetReady()
 {
     int interval;
     cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
-    if( GetRadeontopState() )
+
+    if(!rdt->init_rdtop())
     {
-        mSetTimerVal(interval, true);
-        this->SetMenuPresent();
+        this->SetRadeontopState(false);
+        this->SetStatusText(_T("Radeontop not initialized!"), 0);
+        mSetTimerVal(interval);
     }
     else
     {
-        mSetTimerVal(interval);
+        this->SetRadeontopState(true);
+        rdt->get_drm_version(&this->m_drm_ver);
+        mSetTimerVal(interval, true);
+        this->SetMenuPresent();
     }
 
     int x, y;
@@ -66,7 +73,10 @@ void rdt_guiFrame::GetReady()
     this->Fit();
     this->Layout();
 
+    mviewPower->Enable(PowerWindow::CanRun());
     this->SetItemsToShow();
+
+    this->Show();
 }
 
 void rdt_guiFrame::SetMenuPresent()
@@ -258,6 +268,8 @@ void rdt_guiFrame::OnMenuReset(wxCommandEvent& event)
 
     this->GetReady();
     this->Show(true);
+
+    wxUnusedVar(event);
 }
 
 void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
@@ -474,7 +486,7 @@ void rdt_guiFrame::OnViewStats_gtt(wxCommandEvent& event)
 #undef SAVECONF
 #undef _OnViewSelect
 
-void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
+void rdt_guiFrame::DestroyDialogWindow(void * wxid)
 {
     if(wxid == NULL)
         { return; }
@@ -490,6 +502,12 @@ void rdt_guiFrame::DestroyDialogWindow(wxDialog * wxid)
         delete cd;
         cd = NULL;
         mviewCPU->Check(false);
+    }
+    else if(wxid == pw)
+    {
+        delete pw;
+        pw = NULL;
+        mviewPower->Check(false);
     }
 }
 
@@ -514,23 +532,23 @@ QDialog::QDialog(wxWindow * parent)
     this->rdtFrame = (rdt_guiFrame *) parent;
     wxLog::SetActiveTarget(new wxLogTextCtrl(QtextCtrl1));
 
-    wxLogMessage("Bus: %s", rdtFrame->rdt->get_str_busid());
-    wxLogMessage("%s", rdtFrame->rdt->get_str_devid());
-    wxLogMessage("Path: %s",rdtFrame->rdt->get_str_devpath());
+    wxLogMessage("Bus: %s", rdtFrame->GetRadeonHandler()->get_str_busid());
+    wxLogMessage("%s", rdtFrame->GetRadeonHandler()->get_str_devid());
+    wxLogMessage("Path: %s",rdtFrame->GetRadeonHandler()->get_str_devpath());
     wxLogMessage("Driver: %s  %u.%u.%u\n",
-                 rdtFrame->rdt->get_drm_name(),
-                 rdtFrame->m_drm_ver.version_major,
-                 rdtFrame->m_drm_ver.version_minor,
-                 rdtFrame->m_drm_ver.version_patchlevel);
+                 rdtFrame->GetRadeonHandler()->get_drm_name(),
+                 rdtFrame->GetDrmVerInfo().version_major,
+                 rdtFrame->GetDrmVerInfo().version_minor,
+                 rdtFrame->GetDrmVerInfo().version_patchlevel);
 
-    if(rdtFrame->rdt != NULL && !rdtFrame->rdt->haserror())
+    if(rdtFrame->GetRadeonHandler() != NULL && !rdtFrame->GetRadeonHandler()->haserror())
     {
-        if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
+        if (strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "radeon") == 0)
         {
             QchoiceAMD->Hide();
             bSizer2->Remove((wxSizer*) QchoiceAMD);
         }
-        else if(strcmp(rdtFrame->rdt->get_drm_name(), "amdgpu") == 0)
+        else if(strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "amdgpu") == 0)
         {
             QchoiceRadeon->Hide();
         }
@@ -555,7 +573,7 @@ void QDialog::OnQueryClose(wxCloseEvent& event)
 
 void QDialog::OnQChoiceR(wxCommandEvent& event)
 {
-    if (strcmp(rdtFrame->rdt->get_drm_name(), "radeon") == 0)
+    if (strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "radeon") == 0)
     {
         unsigned long val = 0;
         signed long sval = 0;
@@ -564,7 +582,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
         {
         case 1: //CLOCK_CRYSTAL_FREQ
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
                 {
                     wxLogMessage("Crystal Frequency: %u Hz (%u kHz)", (unsigned)val, unsigned (val/1000));
                 }
@@ -573,56 +591,56 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
             }
         case 2: //NUM_TILE_PIPES
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_NUM_TILE_PIPES, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_NUM_TILE_PIPES, &val))
                     wxLogMessage("Tile Pipes count: %u", (unsigned)val);
                 //else
                 break;
             }
         case 3: //RADEON_INFO_MAX_SE
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SE, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SE, &val))
                     wxLogMessage("Number of Shader Engines: %u", (unsigned)val);
                 //else
                 break;
             }
         case 4: //MAX_SH_PER_SE
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SH_PER_SE, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SH_PER_SE, &val))
                     wxLogMessage("Number of shaders per engine: %u", (unsigned)val);
 
                 break;
             }
         case 5: //MAX_SCLK
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
                     wxLogMessage("Maximum source clock: %u kHz (%u mHz)", (unsigned)val, unsigned(val/1000));
 
                 break;
             }
         case 6: //VCE_FW_VERSION
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_VCE_FW_VERSION, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_VCE_FW_VERSION, &val))
                     wxLogMessage("VCE firmware version: %u", (unsigned)val);
 
                 break;
             }
         case 7: //VCE_FB_VERSION
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_VCE_FB_VERSION, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_VCE_FB_VERSION, &val))
                     wxLogMessage("VCE FB Version: %u", (unsigned)val);
 
                 break;
             }
         case 8: //ACTIVE_CU_COUNT
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_ACTIVE_CU_COUNT, &val))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_ACTIVE_CU_COUNT, &val))
                     wxLogMessage("Active Compute Unit count: %u", (unsigned)val);
 
                 break;
             }
         case 9: //CURRENT_GPU_TEMP
             {
-                if(!rdtFrame->rdt->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &sval))
+                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &sval))
                     wxLogMessage("GPU Temperature: %d", (signed)sval);
 
                 break;
@@ -638,7 +656,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
 void QDialog::OnQChoiceA(wxCommandEvent& event)
 {
 #ifdef ENABLE_AMDGPU
-    class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->rdt->get_drm_handle());
+    class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->GetRadeonHandler()->get_drm_handle());
 
     /**TODO: Edit labels as readable as much */
     switch(QchoiceAMD->GetSelection())
@@ -1011,4 +1029,150 @@ void GUIRefreshRate::OnSetVal(wxCommandEvent& event)
 
     delete this;
     wxUnusedVar(event);
+}
+
+/********************************************************/
+
+void rdt_guiFrame::OnPowerSelect(wxCommandEvent& event)
+{
+    if(event.IsChecked())
+    {
+        this->pw = new PowerWindow(this);
+        pw->Show();
+    }
+    else
+    {
+        DestroyDialogWindow(pw);
+    }
+
+    wxUnusedVar(event);
+}
+
+void PowerWindow::OnPowerClose(wxCloseEvent& event)
+{
+    rdt_guiFrame * f = (rdt_guiFrame *)GetParent();
+    f->DestroyDialogWindow(this);
+
+    wxUnusedVar(event);
+}
+
+PowerWindow::PowerWindow(wxWindow * parent)
+    : PowerFrame(parent)
+{
+    this->pconf = new PowerSupply();
+    this->BatteryInit();
+    this->Show();
+}
+
+PowerWindow::~PowerWindow()
+{
+    if(pconf != NULL)
+        delete pconf;
+
+    wxSize s = this->GetSize();
+    if(ConfigFile::GetConfigFile() != NULL)
+    {
+        cfg->cfgWrite(ConfKeyEnums::PWR_GUI_SIZER_X, s.GetX());
+        cfg->cfgWrite(ConfKeyEnums::PWR_GUI_SIZER_Y, s.GetY());
+    }
+}
+
+void PowerWindow::BatteryInit()
+{
+    if(this->pconf->isError() == true)
+    {
+        this->SetStatusText(wxT("There is no power data!"), 0);
+        return;
+    }
+
+    int x, y;
+    if(ConfigFile::GetConfigFile() != NULL)
+    {
+        if(cfg->cfgRead(ConfKeyEnums::PWR_GUI_SIZER_X, &x) &&
+            cfg->cfgRead(ConfKeyEnums::PWR_GUI_SIZER_Y, &y))
+        {
+            SetSize(x,y);
+        }
+    }
+
+    this->milisec = 1000;
+    m_timer_pf.Start(milisec);
+
+    pconf->GetBatteryInfo(&this->bi);
+
+    SetStatusText(bi.manufacturer + wxT(" ") + bi.model_name, 0);
+    SetStatusText(wxT("STATUS: ") + bi.status, 1);
+    SetStatusText(wxT("HEALTH: ") + bi.health, 2);
+
+    Layout();
+}
+
+static int AvgCurr = 0, AvgCurr_delta = 0;
+
+void PowerWindow::UpdatePowerFrame(wxTimerEvent& event)
+{
+    BatteryVariables bv = {};
+    wxString label("Capacity:\t");
+    int prcnt;
+
+    // Every time, it must re-construct the wxFileConfig!
+    if(pconf != NULL)
+        delete pconf;
+    pconf = new PowerSupply();
+
+    pconf->GetBatteryVars(&bv);
+
+    int ful, stat;
+    ful = bi.charge_real;
+    stat = bv.charge;
+    if(stat == ful) // it seems full.
+        {label.append("~100%");}
+
+    if(stat <= ful/4 /*25%*/)
+        { m_staticText_rate->SetForegroundColour( wxColour(wxT("RED")) ); }
+    else if(stat < (ful * 4/5) /*80%*/)
+        { m_staticText_rate->SetForegroundColour( wxColour(wxT("BLACK")) ); }
+    else
+        { m_staticText_rate->SetForegroundColour( wxColour(wxT("GREEN")) ); }
+
+    pconf->Read(POWER_SUPPLY_CAPACITY, &prcnt, 0);
+    label.append(wxString::Format("%d %%", prcnt));
+
+    int sec = pconf->CalcBatChargeTime();
+    if(sec > 0)
+        label.append(wxString::Format("\t%d:%.2d", sec/60, sec%60));
+
+     m_staticText_rate->SetLabel(label);
+     m_gauge_rate->SetValue(prcnt);
+
+     wxString m_status;
+     pconf->Read(POWER_SUPPLY_STATUS, &m_status, wxString("UNKNOWN"));
+     SetStatusText(wxT("STATUS: ") + m_status, 1);
+
+    tc_Current->SetValue( wxString::Format("%dmA", bv.current/1000) );
+    // It calculates avarage current only while discharging.
+    if(bv.e_status == ChargeStatus::BAT_STAT_DISCHARGE)
+    {
+        if(AvgCurr == 0)
+        {
+            AvgCurr = bv.current;
+        }
+        else
+        {
+            AvgCurr_delta = AvgCurr + bv.current;
+            AvgCurr = AvgCurr_delta /2;
+        }
+        tc_CurrentAvg->SetValue(wxString::Format("%dmA", AvgCurr/1000));
+        st_CurrentAvg->Show();
+        tc_CurrentAvg->Show();
+    }
+    else
+    {
+        st_CurrentAvg->Show(false);
+        tc_CurrentAvg->Show(false);
+    }
+
+    tc_Voltage->SetValue(wxString::Format("%.3fV", bv.voltage/1.0e6));
+
+     wxUnusedVar(event);
 }

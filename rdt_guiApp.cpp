@@ -25,22 +25,6 @@ IMPLEMENT_APP(rdt_guiApp);
 bool rdt_guiApp::OnInit()
 {
     frame = new rdt_guiFrame(0L);
-    frame->Show();
-
-    rdt = new radeontop::rdtop();
-    frame->rdt = rdt;
-
-    if(!rdt->init_rdtop())
-    {
-        frame->SetRadeontopState(false);
-        frame->SetStatusText(_T("Radeontop not initialized!"), 0);
-    }
-    else
-    {
-        frame->SetRadeontopState(true);
-        rdt->get_drm_version(&frame->m_drm_ver);
-    }
-
     frame->GetReady();
 
     return true;

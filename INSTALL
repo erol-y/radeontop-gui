@@ -1,4 +1,7 @@
 You will need DRM, pciaccess, cpufreq and wxwidgets libraries to compile the project.
+In terminal, type;
+sudo apt-get install libpciaccess-dev libcpufreq-dev libdrm-dev libwxgtk3.0-dev
+
 Code::Blocks and wxFormBuilder project files are included.
 Also, you can use "make" to build.
 

@@ -44,7 +44,9 @@ enum ConfKeyEnums
         CPU_GUI_LIMIT_COUNT,        //int
         CPU_GUI_SHOW_AVARAGE,       //bool
         CPU_GUI_SIZER_X,            //int
-        CPU_GUI_SIZER_Y             //int
+        CPU_GUI_SIZER_Y,            //int
+        PWR_GUI_SIZER_X,            //int
+        PWR_GUI_SIZER_Y             //int
     };
 
 static const wchar_t* ConfKeys[] = {wxT("GENERAL/update-interval"),
@@ -69,7 +71,9 @@ static const wchar_t* ConfKeys[] = {wxT("GENERAL/update-interval"),
                                     wxT("CPU/limit-count"),
                                     wxT("CPU/show-avarage"),
                                     wxT("CPU/frameX"),
-                                    wxT("CPU/frameY")
+                                    wxT("CPU/frameY"),
+                                    wxT("POWER/frameX"),
+                                    wxT("POWER/frameY")
                                     };
 
 #endif // CONFDEF_H_INCLUDED

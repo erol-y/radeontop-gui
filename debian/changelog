@@ -1,3 +1,9 @@
+radeontop-gui (1.5.1-2ubuntu1) trusty; urgency=medium
+
+  * (NEW) Power Supply window (experimantal). 
+
+ -- Erol Yesilyurt <erolyslyrt@gmail.com>  Sun, 14 Oct 2018 17:19:26 +0300
+
 radeontop-gui (1.5.1-2) trusty; urgency=medium
 
   * Added "deskfile" option into Makefile.

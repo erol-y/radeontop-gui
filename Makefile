@@ -60,7 +60,7 @@ else
 	OUTOBJDIR = obj/Release
 endif
 
-OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o
+OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o $(OUTOBJDIR)/power.o
 
 ifndef plain
 ifeq ($(debug), 1)
@@ -118,6 +118,9 @@ $(OUTOBJDIR)/ticks.o: ticks.cpp
 $(OUTOBJDIR)/conf.o: conf.cpp
 	$(CXX) $(CFLAGS) -c conf.cpp -o $(OUTOBJDIR)/conf.o
 
+$(OUTOBJDIR)/power.o: power.cpp
+	$(CXX) $(CFLAGS) -c power.cpp -o $(OUTOBJDIR)/power.o
+
 clean:
 	rm -f *.o $(OUTDIR)/$(bin) $(verh)
 	test ! -d obj/Debug || rm -f obj/Debug/*.o
@@ -144,9 +147,9 @@ ifeq ($(deskfile), 1)
 endif
 
 uninstall:
-	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
-	rm -f $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
-	-rm -f $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
+	- rm -f $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
+	- rm -f $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
+	- rm -f $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
 
 dist: ver = $(shell git describe)
 dist: name = $(bin)-$(ver)

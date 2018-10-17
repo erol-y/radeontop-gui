@@ -26,8 +26,6 @@ class rdt_guiApp : public wxApp
 {
     private:
         class rdt_guiFrame * frame;
-        class radeontop::rdtop * rdt;
-
 
     public:
         virtual bool OnInit();

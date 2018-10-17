@@ -71,6 +71,8 @@
 		<Unit filename="cputop.h" />
 		<Unit filename="detect.cpp" />
 		<Unit filename="family_str.cpp" />
+		<Unit filename="power.cpp" />
+		<Unit filename="power.h" />
 		<Unit filename="r600_pci_ids.h" />
 		<Unit filename="radeontop.cpp" />
 		<Unit filename="radeontop.h" />

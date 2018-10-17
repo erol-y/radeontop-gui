@@ -70,6 +70,7 @@ class GUIFrame : public wxFrame
 		wxMenuItem* mviewstats_gtt;
 		wxMenuItem* mviewQuery;
 		wxMenuItem* mviewCPU;
+		wxMenuItem* mviewPower;
 		wxMenu* helpMenu;
 		wxStatusBar* statusBar;
 		wxBoxSizer* bSizer1;
@@ -134,13 +135,14 @@ class GUIFrame : public wxFrame
 		virtual void OnViewStats_gtt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnQuery( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCpuQuery( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnPowerSelect( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateVal( wxTimerEvent& event ) { event.Skip(); }
 
 
 	public:
 
-		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("radeontop GUI"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 470,325 ), long style = wxDEFAULT_FRAME_STYLE|wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
+		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("radeontop GUI"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 505,325 ), long style = wxDEFAULT_FRAME_STYLE|wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
 
 		~GUIFrame();
 
@@ -228,6 +230,41 @@ class DialogRR : public wxDialog
 
 		DialogRR( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Set Refresh Rate"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 255,124 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~DialogRR();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class PowerFrame
+///////////////////////////////////////////////////////////////////////////////
+class PowerFrame : public wxFrame
+{
+	private:
+
+	protected:
+		wxMenuBar* m_menubar2;
+		wxStatusBar* m_statusBar2;
+		wxBoxSizer* bSizerPF_top;
+		wxStaticText* m_staticText_rate;
+		wxGauge* m_gauge_rate;
+		wxStaticLine* m_staticline2;
+		wxStaticText* st_Current;
+		wxTextCtrl* tc_Current;
+		wxStaticText* st_CurrentAvg;
+		wxTextCtrl* tc_CurrentAvg;
+		wxStaticText* st_Voltage;
+		wxTextCtrl* tc_Voltage;
+		wxTimer m_timer_pf;
+
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnPowerClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void UpdatePowerFrame( wxTimerEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		PowerFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~PowerFrame();
 
 };
 

@@ -31,61 +31,67 @@
 #include <wx/log.h>
 #include "radeontop.h"
 #include "cputop.h"
+#include "power.h"
 
 class rdt_guiFrame: public GUIFrame
 {
     public:
-        class radeontop::rdtop * rdt;
-        radeontop::_m_drm_version m_drm_ver;
-
         void GetReady();
-        void SetRadeontopState(bool bState) { is_radeontop_ok = bState; }
-        bool GetRadeontopState() const      { return is_radeontop_ok; }
+        radeontop::rdtop * GetRadeonHandler() const { return this->rdt; }
+        radeontop::_m_drm_version GetDrmVerInfo() const { return this->m_drm_ver; }
+        bool GetRadeontopState() const { return is_radeontop_ok; }
         void mSetTimerVal(int, bool = false);
         int GetTimerVal() const { return this->msec; }
-        void SetItemsToShow();
-        void SetMenuPresent();
-        void DestroyDialogWindow(wxDialog *);
+        void DestroyDialogWindow(void *);
 
         rdt_guiFrame(wxFrame *frame);
         ~rdt_guiFrame();
 
     private:
+        class radeontop::rdtop * rdt;
+        radeontop::_m_drm_version m_drm_ver;
+
+        void SetRadeontopState(bool bState) { is_radeontop_ok = bState; }
+        void SetItemsToShow();
+        void SetMenuPresent();
+
         int msec;
         bool is_radeontop_ok;
 
         class QDialog * qd;
         class CpuDialog * cd;
+        class PowerWindow * pw;
 
-        virtual void OnClose(wxCloseEvent& event);
-        virtual void OnQuit(wxCommandEvent& event);
-        virtual void OnAbout(wxCommandEvent& event);
+        void OnClose(wxCloseEvent& event);
+        void OnQuit(wxCommandEvent& event);
+        void OnAbout(wxCommandEvent& event);
 
-        virtual void OnSize(wxSizeEvent& event);
-        virtual void UpdateVal(wxTimerEvent& event);
-        virtual void OnRefRate(wxCommandEvent& event);
-        virtual void OnMenuSaveExit(wxCommandEvent& event);
-        virtual void OnMenuReset(wxCommandEvent& event);
+        void OnSize(wxSizeEvent& event);
+        void UpdateVal(wxTimerEvent& event);
+        void OnRefRate(wxCommandEvent& event);
+        void OnMenuSaveExit(wxCommandEvent& event);
+        void OnMenuReset(wxCommandEvent& event);
 
-        virtual void OnViewStats_gui(wxCommandEvent& event);
-        virtual void OnViewStats_ee(wxCommandEvent& event);
-        virtual void OnViewStats_vgt(wxCommandEvent& event);
-        virtual void OnViewStats_ta(wxCommandEvent& event);
-        virtual void OnViewStats_tc(wxCommandEvent& event);
-        virtual void OnViewStats_sx(wxCommandEvent& event);
-        virtual void OnViewStats_sh(wxCommandEvent& event);
-        virtual void OnViewStats_spi(wxCommandEvent& event);
-        virtual void OnViewStats_smx(wxCommandEvent& event);
-        virtual void OnViewStats_sc(wxCommandEvent& event);
-        virtual void OnViewStats_pa(wxCommandEvent& event);
-        virtual void OnViewStats_db(wxCommandEvent& event);
-        virtual void OnViewStats_cb(wxCommandEvent& event);
-        virtual void OnViewStats_cr(wxCommandEvent& event);
-        virtual void OnViewStats_vram(wxCommandEvent& event);
-        virtual void OnViewStats_gtt(wxCommandEvent& event);
+        void OnViewStats_gui(wxCommandEvent& event);
+        void OnViewStats_ee(wxCommandEvent& event);
+        void OnViewStats_vgt(wxCommandEvent& event);
+        void OnViewStats_ta(wxCommandEvent& event);
+        void OnViewStats_tc(wxCommandEvent& event);
+        void OnViewStats_sx(wxCommandEvent& event);
+        void OnViewStats_sh(wxCommandEvent& event);
+        void OnViewStats_spi(wxCommandEvent& event);
+        void OnViewStats_smx(wxCommandEvent& event);
+        void OnViewStats_sc(wxCommandEvent& event);
+        void OnViewStats_pa(wxCommandEvent& event);
+        void OnViewStats_db(wxCommandEvent& event);
+        void OnViewStats_cb(wxCommandEvent& event);
+        void OnViewStats_cr(wxCommandEvent& event);
+        void OnViewStats_vram(wxCommandEvent& event);
+        void OnViewStats_gtt(wxCommandEvent& event);
 
-        virtual void OnQuery(wxCommandEvent& event);
-        virtual void OnCpuQuery(wxCommandEvent& event);
+        void OnQuery(wxCommandEvent& event);
+        void OnCpuQuery(wxCommandEvent& event);
+        void OnPowerSelect(wxCommandEvent& event);
 };
 
 class QDialog: public QueryDialog
@@ -94,14 +100,13 @@ class QDialog: public QueryDialog
         QDialog(wxWindow *);
         ~QDialog();
 
-        virtual void OnQueryClose(wxCloseEvent& event);
+        void OnQueryClose(wxCloseEvent& event);
 
     private:
         rdt_guiFrame * rdtFrame;
 
-    protected:
-        virtual void OnQChoiceR(wxCommandEvent& event);
-        virtual void OnQChoiceA(wxCommandEvent& event);
+        void OnQChoiceR(wxCommandEvent& event);
+        void OnQChoiceA(wxCommandEvent& event);
 };
 
 class CpuDialog: public CpuQueryDialog
@@ -112,7 +117,7 @@ class CpuDialog: public CpuQueryDialog
         CpuDialog(wxWindow *);
         ~CpuDialog();
 
-        virtual void OnCpuDialogClose(wxCloseEvent& event);
+        void OnCpuDialogClose(wxCloseEvent& event);
 
     private:
         rdt_guiFrame * rdtFrame;
@@ -124,10 +129,9 @@ class CpuDialog: public CpuQueryDialog
         bool isAvg;
         unsigned int cAvg;
 
-    protected:
-        virtual void OnChoiceCpuLimit(wxCommandEvent& event);
-        virtual void OnCheckBoxAvg(wxCommandEvent& event);
-        virtual void UpdateCpuVal(wxTimerEvent& event);
+        void OnChoiceCpuLimit(wxCommandEvent& event);
+        void OnCheckBoxAvg(wxCommandEvent& event);
+        void UpdateCpuVal(wxTimerEvent& event);
 };
 
 class GUIRefreshRate: public DialogRR
@@ -139,8 +143,26 @@ class GUIRefreshRate: public DialogRR
     private:
         rdt_guiFrame * rdtFrame;
 
-    protected:
-        virtual void OnSetVal( wxCommandEvent& event );
+        void OnSetVal( wxCommandEvent& event );
+};
+
+class PowerWindow: public PowerFrame
+{
+    public:
+        static bool CanRun() { return PowerSupply::HasBattery(); }
+
+        PowerWindow(wxWindow *);
+        ~PowerWindow();
+
+    private:
+        PowerSupply * pconf;
+        BatteryInfo bi;
+        int milisec;
+
+        void BatteryInit();
+        void UpdatePowerFrame( wxTimerEvent& event );
+        void OnPowerClose( wxCloseEvent& event );
+
 };
 
 #endif // RDT_GUIMAIN_H

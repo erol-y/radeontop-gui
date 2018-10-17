@@ -107,6 +107,12 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	mviewCPU = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("CPU") ) , wxEmptyString, wxITEM_CHECK );
 	viewmenu->Append( mviewCPU );
 
+	viewmenu->AppendSeparator();
+
+	mviewPower = new wxMenuItem( viewmenu, wxID_ANY, wxString( wxT("Power") ) , wxEmptyString, wxITEM_CHECK );
+	viewmenu->Append( mviewPower );
+	mviewPower->Enable( false );
+
 	mbar->Append( viewmenu, wxT("&View") );
 
 	helpMenu = new wxMenu();
@@ -335,6 +341,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gtt ), this, mviewstats_gtt->GetId());
 	viewmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuery ), this, mviewQuery->GetId());
 	viewmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnCpuQuery ), this, mviewCPU->GetId());
+	viewmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnPowerSelect ), this, mviewPower->GetId());
 	helpMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ), this, menuHelpAbout->GetId());
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( GUIFrame::UpdateVal ) );
 }
@@ -513,5 +520,78 @@ DialogRR::~DialogRR()
 {
 	// Disconnect Events
 	buttonSet->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogRR::OnSetVal ), NULL, this );
+
+}
+
+PowerFrame::PowerFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	m_menubar2 = new wxMenuBar( 0 );
+	this->SetMenuBar( m_menubar2 );
+
+	m_statusBar2 = this->CreateStatusBar( 3, wxSTB_SIZEGRIP, wxID_ANY );
+	bSizerPF_top = new wxBoxSizer( wxVERTICAL );
+
+	m_staticText_rate = new wxStaticText( this, wxID_ANY, wxT("Capacity:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_rate->Wrap( -1 );
+	bSizerPF_top->Add( m_staticText_rate, 0, wxALL, 5 );
+
+	m_gauge_rate = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxSize( -1,15 ), wxGA_HORIZONTAL );
+	m_gauge_rate->SetValue( 0 );
+	bSizerPF_top->Add( m_gauge_rate, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticline2 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizerPF_top->Add( m_staticline2, 0, wxEXPAND | wxALL, 5 );
+
+	wxFlexGridSizer* fgSizer2;
+	fgSizer2 = new wxFlexGridSizer( 0, 5, 15, 0 );
+	fgSizer2->SetFlexibleDirection( wxBOTH );
+	fgSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	st_Current = new wxStaticText( this, wxID_ANY, wxT("Current:"), wxDefaultPosition, wxDefaultSize, 0 );
+	st_Current->Wrap( -1 );
+	fgSizer2->Add( st_Current, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	tc_Current = new wxTextCtrl( this, wxID_ANY, wxT("mA"), wxDefaultPosition, wxDefaultSize, wxTE_DONTWRAP|wxTE_READONLY|wxTE_RIGHT );
+	fgSizer2->Add( tc_Current, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	fgSizer2->Add( 100, 0, 1, wxEXPAND, 5 );
+
+	st_CurrentAvg = new wxStaticText( this, wxID_ANY, wxT("Avarage:"), wxDefaultPosition, wxDefaultSize, 0 );
+	st_CurrentAvg->Wrap( -1 );
+	fgSizer2->Add( st_CurrentAvg, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	tc_CurrentAvg = new wxTextCtrl( this, wxID_ANY, wxT("mA"), wxDefaultPosition, wxDefaultSize, wxTE_DONTWRAP|wxTE_READONLY|wxTE_RIGHT );
+	fgSizer2->Add( tc_CurrentAvg, 0, wxALL, 5 );
+
+	st_Voltage = new wxStaticText( this, wxID_ANY, wxT("Voltage:"), wxDefaultPosition, wxDefaultSize, 0 );
+	st_Voltage->Wrap( -1 );
+	fgSizer2->Add( st_Voltage, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	tc_Voltage = new wxTextCtrl( this, wxID_ANY, wxT("V"), wxDefaultPosition, wxDefaultSize, wxTE_DONTWRAP|wxTE_READONLY|wxTE_RIGHT );
+	fgSizer2->Add( tc_Voltage, 0, wxALL, 5 );
+
+
+	bSizerPF_top->Add( fgSizer2, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( bSizerPF_top );
+	this->Layout();
+	m_timer_pf.SetOwner( this, wxID_ANY );
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( PowerFrame::OnPowerClose ) );
+	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( PowerFrame::UpdatePowerFrame ) );
+}
+
+PowerFrame::~PowerFrame()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( PowerFrame::OnPowerClose ) );
+	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( PowerFrame::UpdatePowerFrame ) );
 
 }
