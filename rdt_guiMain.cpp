@@ -1114,6 +1114,8 @@ void PowerWindow::UpdatePowerFrame(wxTimerEvent& event)
     BatteryVariables bv = {};
     wxString label("Capacity:\t");
     int prcnt;
+    float m_volt;
+    float m_curr;
 
     // Every time, it must re-construct the wxFileConfig!
     if(pconf != NULL)
@@ -1172,7 +1174,12 @@ void PowerWindow::UpdatePowerFrame(wxTimerEvent& event)
         tc_CurrentAvg->Show(false);
     }
 
-    tc_Voltage->SetValue(wxString::Format("%.3fV", bv.voltage/1.0e6));
+    m_volt = bv.voltage / 1.0e6;
+    tc_Voltage->SetValue(wxString::Format("%.3fV", m_volt));
+
+    // Power
+    m_curr = bv.current / 1.0e6;
+    tc_Power->SetValue(wxString::Format("%.3fW", m_volt * m_curr));
 
      wxUnusedVar(event);
 }

@@ -253,6 +253,8 @@ class PowerFrame : public wxFrame
 		wxTextCtrl* tc_CurrentAvg;
 		wxStaticText* st_Voltage;
 		wxTextCtrl* tc_Voltage;
+		wxStaticText* st_Power;
+		wxTextCtrl* tc_Power;
 		wxTimer m_timer_pf;
 
 		// Virtual event handlers, overide them in your derived class

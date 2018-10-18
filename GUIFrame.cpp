@@ -574,6 +574,16 @@ PowerFrame::PowerFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	fgSizer2->Add( tc_Voltage, 0, wxALL, 5 );
 
 
+	fgSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	st_Power = new wxStaticText( this, wxID_ANY, wxT("Power:"), wxDefaultPosition, wxDefaultSize, 0 );
+	st_Power->Wrap( -1 );
+	fgSizer2->Add( st_Power, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	tc_Power = new wxTextCtrl( this, wxID_ANY, wxT("W"), wxDefaultPosition, wxDefaultSize, wxTE_DONTWRAP|wxTE_READONLY|wxTE_RIGHT );
+	fgSizer2->Add( tc_Power, 0, wxALL, 5 );
+
+
 	bSizerPF_top->Add( fgSizer2, 1, wxEXPAND, 5 );
 
 
