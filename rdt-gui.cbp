@@ -74,10 +74,13 @@
 		<Unit filename="src/GUIFrame.h" />
 		<Unit filename="src/auth.cpp" />
 		<Unit filename="src/conf.cpp" />
+		<Unit filename="src/cpudialog.cpp" />
 		<Unit filename="src/cputop.cpp" />
 		<Unit filename="src/detect.cpp" />
 		<Unit filename="src/family_str.cpp" />
 		<Unit filename="src/power.cpp" />
+		<Unit filename="src/powergui.cpp" />
+		<Unit filename="src/querydialog.cpp" />
 		<Unit filename="src/radeontop.cpp" />
 		<Unit filename="src/rdt_guiApp.cpp" />
 		<Unit filename="src/rdt_guiMain.cpp" />

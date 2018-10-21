@@ -61,7 +61,7 @@ else
 	OUTOBJDIR = out/obj/Release/src
 endif
 
-OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o $(OUTOBJDIR)/power.o
+OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/cpudialog.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o $(OUTOBJDIR)/power.o $(OUTOBJDIR)/powergui.o $(OUTOBJDIR)/querydialog.o
 
 ifndef plain
 ifeq ($(debug), 1)
@@ -98,6 +98,9 @@ $(OUTOBJDIR)/auth.o: $(SOURCEDIR)/auth.cpp
 $(OUTOBJDIR)/cputop.o: $(SOURCEDIR)/cputop.cpp
 	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/cputop.cpp -o $(OUTOBJDIR)/cputop.o
 
+$(OUTOBJDIR)/cpudialog.o: $(SOURCEDIR)/cpudialog.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/cpudialog.cpp -o $(OUTOBJDIR)/cpudialog.o
+
 $(OUTOBJDIR)/detect.o: $(SOURCEDIR)/detect.cpp
 	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/detect.cpp -o $(OUTOBJDIR)/detect.o
 
@@ -122,6 +125,12 @@ $(OUTOBJDIR)/conf.o: $(SOURCEDIR)/conf.cpp
 $(OUTOBJDIR)/power.o: $(SOURCEDIR)/power.cpp
 	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/power.cpp -o $(OUTOBJDIR)/power.o
 
+$(OUTOBJDIR)/powergui.o: $(SOURCEDIR)/powergui.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/powergui.cpp -o $(OUTOBJDIR)/powergui.o
+
+$(OUTOBJDIR)/querydialog.o: $(SOURCEDIR)/querydialog.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/querydialog.cpp -o $(OUTOBJDIR)/querydialog.o
+
 clean:
 	rm -f *.o $(OUTDIR)/$(bin) $(verh)
 	- rm -rf out
@@ -143,7 +152,7 @@ install: uninstall all
 	$(INSTALL) -D -m755 $(OUTDIR)/$(bin) $(DESTDIR)/$(PREFIX)/sbin/$(binstall)
 	$(INSTALL) -D -m755 $(scrpt) $(DESTDIR)/$(PREFIX)/sbin/$(scrpt)
 ifeq ($(deskfile), 1)
-	$(INSTALL) -D -m644 $(CURDIR)/debian/$(gdesktop) $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
+	$(INSTALL) -D -m644 $(CURDIR)/data/$(gdesktop) $(DESTDIR)/$(PREFIX)/$(DOT_DESKTOP)/$(gdesktop)
 endif
 
 uninstall:

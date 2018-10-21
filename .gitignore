@@ -10,5 +10,6 @@ out/*
 rdt-gui.depend
 rdt-gui.layout
 debian/.debhelper
+debian/files
 debian/radeontop-gui
 debian/radeontop-gui*

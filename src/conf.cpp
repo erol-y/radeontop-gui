@@ -55,5 +55,8 @@ ConfigFile::~ConfigFile()
 
 ConfigFile * ConfigFile::GetConfigFile()
 {
+    if(conf == NULL)
+        return OnInit();
+
     return conf;
 }
