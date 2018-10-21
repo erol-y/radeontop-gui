@@ -18,17 +18,18 @@
 #define RDT_GUIMAIN_H
 
 #ifndef VER_H
-#include "version.h"
+#include "../version.h"
 #endif // VER_H
 
 #include <iostream>
 #include <map>
 #include <string>
 
-#include "rdt_guiApp.h"
-#include "GUIFrame.h"
 #include <wx/msgdlg.h>
 #include <wx/log.h>
+
+#include "rdt_guiApp.h"
+#include "../src/GUIFrame.h"
 #include "radeontop.h"
 #include "cputop.h"
 #include "power.h"

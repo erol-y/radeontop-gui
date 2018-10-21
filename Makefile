@@ -27,6 +27,7 @@ gdesktop = radeontop-gui.desktop
 src = $(filter-out ,$(wildcard *.cpp))
 obj = $(src:.c=.o)
 verh = version.h
+SOURCEDIR = src
 
 CFLAGS_SECTIONED = -ffunction-sections -fdata-sections
 LDFLAGS_SECTIONED = -Wl,-gc-sections
@@ -49,15 +50,15 @@ ifeq ($(amdgpu), 1)
 endif
 
 ifeq ($(debug), 1)
-	OUTDIR = bin/Debug
+	OUTDIR = out/bin/Debug
 else
-	OUTDIR = bin/Release
+	OUTDIR = out/bin/Release
 endif
 
 ifeq ($(debug), 1)
-	OUTOBJDIR = obj/Debug
+	OUTOBJDIR = out/obj/Debug/src
 else
-	OUTOBJDIR = obj/Release
+	OUTOBJDIR = out/obj/Release/src
 endif
 
 OBJ_OUT = $(OUTOBJDIR)/GUIFrame.o $(OUTOBJDIR)/auth.o $(OUTOBJDIR)/cputop.o $(OUTOBJDIR)/detect.o $(OUTOBJDIR)/family_str.o $(OUTOBJDIR)/radeontop.o $(OUTOBJDIR)/rdt_guiApp.o $(OUTOBJDIR)/rdt_guiMain.o $(OUTOBJDIR)/ticks.o $(OUTOBJDIR)/conf.o $(OUTOBJDIR)/power.o
@@ -75,11 +76,11 @@ LDFLAGS += $(LDFLAGS_SECTIONED)
 LIBS += $(shell pkg-config --libs pciaccess)
 LIBS += $(shell pkg-config --libs libdrm)
 LDFLAGS += -lcpufreq
-LDFLAGS +=	`wx-config --libs`
+LDFLAGS += `wx-config --libs`
 
 .PHONY: all clean install uninstall dist
 
-all: $(bin)
+all: $(verh) $(bin)
 
 $(obj): $(wildcard *.h) $(verh)
 
@@ -88,43 +89,42 @@ $(bin): $(OUTDIR) $(OUTOBJDIR) $(OBJ_OUT)
 $(bin): $(obj)
 	$(LD) -o $(OUTDIR)/$(bin) $(OBJ_OUT) $(LDFLAGS) $(LIBS)
 
-$(OUTOBJDIR)/GUIFrame.o: GUIFrame.cpp
-	$(CXX) $(CFLAGS) -c GUIFrame.cpp -o $(OUTOBJDIR)/GUIFrame.o
+$(OUTOBJDIR)/GUIFrame.o: $(SOURCEDIR)/GUIFrame.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/GUIFrame.cpp -o $(OUTOBJDIR)/GUIFrame.o
 
-$(OUTOBJDIR)/auth.o: auth.cpp
-	$(CXX) $(CFLAGS) -c auth.cpp -o $(OUTOBJDIR)/auth.o
+$(OUTOBJDIR)/auth.o: $(SOURCEDIR)/auth.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/auth.cpp -o $(OUTOBJDIR)/auth.o
 
-$(OUTOBJDIR)/cputop.o: cputop.cpp
-	$(CXX) $(CFLAGS) -c cputop.cpp -o $(OUTOBJDIR)/cputop.o
+$(OUTOBJDIR)/cputop.o: $(SOURCEDIR)/cputop.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/cputop.cpp -o $(OUTOBJDIR)/cputop.o
 
-$(OUTOBJDIR)/detect.o: detect.cpp
-	$(CXX) $(CFLAGS) -c detect.cpp -o $(OUTOBJDIR)/detect.o
+$(OUTOBJDIR)/detect.o: $(SOURCEDIR)/detect.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/detect.cpp -o $(OUTOBJDIR)/detect.o
 
-$(OUTOBJDIR)/family_str.o: family_str.cpp
-	$(CXX) $(CFLAGS) -c family_str.cpp -o $(OUTOBJDIR)/family_str.o
+$(OUTOBJDIR)/family_str.o: $(SOURCEDIR)/family_str.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/family_str.cpp -o $(OUTOBJDIR)/family_str.o
 
-$(OUTOBJDIR)/radeontop.o: radeontop.cpp
-	$(CXX) $(CFLAGS) -c radeontop.cpp -o $(OUTOBJDIR)/radeontop.o
+$(OUTOBJDIR)/radeontop.o: $(SOURCEDIR)/radeontop.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/radeontop.cpp -o $(OUTOBJDIR)/radeontop.o
 
-$(OUTOBJDIR)/rdt_guiApp.o: rdt_guiApp.cpp
-	$(CXX) $(CFLAGS) -c rdt_guiApp.cpp -o $(OUTOBJDIR)/rdt_guiApp.o
+$(OUTOBJDIR)/rdt_guiApp.o: $(SOURCEDIR)/rdt_guiApp.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/rdt_guiApp.cpp -o $(OUTOBJDIR)/rdt_guiApp.o
 
-$(OUTOBJDIR)/rdt_guiMain.o: rdt_guiMain.cpp
-	$(CXX) $(CFLAGS) -c rdt_guiMain.cpp -o $(OUTOBJDIR)/rdt_guiMain.o
+$(OUTOBJDIR)/rdt_guiMain.o: $(SOURCEDIR)/rdt_guiMain.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/rdt_guiMain.cpp -o $(OUTOBJDIR)/rdt_guiMain.o
 
-$(OUTOBJDIR)/ticks.o: ticks.cpp
-	$(CXX) $(CFLAGS) -c ticks.cpp -o $(OUTOBJDIR)/ticks.o
+$(OUTOBJDIR)/ticks.o: $(SOURCEDIR)/ticks.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/ticks.cpp -o $(OUTOBJDIR)/ticks.o
 
-$(OUTOBJDIR)/conf.o: conf.cpp
-	$(CXX) $(CFLAGS) -c conf.cpp -o $(OUTOBJDIR)/conf.o
+$(OUTOBJDIR)/conf.o: $(SOURCEDIR)/conf.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/conf.cpp -o $(OUTOBJDIR)/conf.o
 
-$(OUTOBJDIR)/power.o: power.cpp
-	$(CXX) $(CFLAGS) -c power.cpp -o $(OUTOBJDIR)/power.o
+$(OUTOBJDIR)/power.o: $(SOURCEDIR)/power.cpp
+	$(CXX) $(CFLAGS) -c $(SOURCEDIR)/power.cpp -o $(OUTOBJDIR)/power.o
 
 clean:
 	rm -f *.o $(OUTDIR)/$(bin) $(verh)
-	test ! -d obj/Debug || rm -f obj/Debug/*.o
-	test ! -d obj/Release || rm -f obj/Release/*.o
+	- rm -rf out
 
 .git:
 

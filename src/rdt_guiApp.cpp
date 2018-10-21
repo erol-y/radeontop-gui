@@ -18,7 +18,7 @@
 #include "wx_pch.h"
 #endif
 
-#include "rdt_guiApp.h"
+#include "../include/rdt_guiApp.h"
 
 IMPLEMENT_APP(rdt_guiApp);
 

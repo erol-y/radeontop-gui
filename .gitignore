@@ -6,6 +6,7 @@ bin
 bin/*
 obj
 obj/*
+out/*
 rdt-gui.depend
 rdt-gui.layout
 debian/.debhelper

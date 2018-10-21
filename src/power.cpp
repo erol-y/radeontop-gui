@@ -14,7 +14,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "power.h"
+#include "../include/power.h"
 
 ChargeStatus PowerSupply::GetBatteryStatus() const
 {

@@ -9,8 +9,8 @@
 		<Build>
 			<Target title="Debug">
 				<Option platforms="Unix;" />
-				<Option output="bin/Debug/radeontop-gui" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="out/bin/Debug/radeontop-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="out/obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -20,6 +20,7 @@
 					<Add option="-ffunction-sections -fdata-sections" />
 					<Add option="`pkg-config --cflags pciaccess`" />
 					<Add option="`pkg-config --cflags libdrm`" />
+					<Add option="`wx-config --debug=yes --cflags`" />
 					<Add option="-DENABLE_AMDGPU=1" />
 				</Compiler>
 				<Linker>
@@ -30,8 +31,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/radeontop-gui" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="out/bin/Release/radeontop-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="out/obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -40,6 +41,7 @@
 					<Add option="-ffunction-sections -fdata-sections" />
 					<Add option="`pkg-config --cflags pciaccess`" />
 					<Add option="`pkg-config --cflags libdrm`" />
+					<Add option="`wx-config  --cflags`" />
 					<Add option="-DENABLE_AMDGPU=1" />
 				</Compiler>
 				<Linker>
@@ -53,7 +55,6 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="`wx-config --cflags`" />
 		</Compiler>
 		<Linker>
 			<Add option="`wx-config --libs`" />
@@ -61,26 +62,26 @@
 		<ExtraCommands>
 			<Add before="./getver.sh" />
 		</ExtraCommands>
-		<Unit filename="GUIFrame.cpp" />
-		<Unit filename="GUIFrame.h" />
-		<Unit filename="auth.cpp" />
-		<Unit filename="conf.cpp" />
-		<Unit filename="conf.h" />
-		<Unit filename="confdef.h" />
-		<Unit filename="cputop.cpp" />
-		<Unit filename="cputop.h" />
-		<Unit filename="detect.cpp" />
-		<Unit filename="family_str.cpp" />
-		<Unit filename="power.cpp" />
-		<Unit filename="power.h" />
-		<Unit filename="r600_pci_ids.h" />
-		<Unit filename="radeontop.cpp" />
-		<Unit filename="radeontop.h" />
-		<Unit filename="rdt_guiApp.cpp" />
-		<Unit filename="rdt_guiApp.h" />
-		<Unit filename="rdt_guiMain.cpp" />
-		<Unit filename="rdt_guiMain.h" />
-		<Unit filename="ticks.cpp" />
+		<Unit filename="include/conf.h" />
+		<Unit filename="include/confdef.h" />
+		<Unit filename="include/cputop.h" />
+		<Unit filename="include/pci_ids/r600_pci_ids.h" />
+		<Unit filename="include/power.h" />
+		<Unit filename="include/radeontop.h" />
+		<Unit filename="include/rdt_guiApp.h" />
+		<Unit filename="include/rdt_guiMain.h" />
+		<Unit filename="src/GUIFrame.cpp" />
+		<Unit filename="src/GUIFrame.h" />
+		<Unit filename="src/auth.cpp" />
+		<Unit filename="src/conf.cpp" />
+		<Unit filename="src/cputop.cpp" />
+		<Unit filename="src/detect.cpp" />
+		<Unit filename="src/family_str.cpp" />
+		<Unit filename="src/power.cpp" />
+		<Unit filename="src/radeontop.cpp" />
+		<Unit filename="src/rdt_guiApp.cpp" />
+		<Unit filename="src/rdt_guiMain.cpp" />
+		<Unit filename="src/ticks.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

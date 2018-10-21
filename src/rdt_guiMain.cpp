@@ -18,8 +18,8 @@
 #include "wx_pch.h"
 #endif
 
-#include "rdt_guiMain.h"
-#include "conf.h"
+#include "../include/rdt_guiMain.h"
+#include "../include/conf.h"
 
 static ConfigFile * cfg = NULL;
 

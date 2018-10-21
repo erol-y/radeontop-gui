@@ -14,7 +14,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "conf.h"
+#include "../include/conf.h"
 
 static ConfigFile * conf = NULL;
 
