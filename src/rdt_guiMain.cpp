@@ -45,6 +45,8 @@ rdt_guiFrame::~rdt_guiFrame()
         cfg->cfgWrite( ConfKeyEnums::GEN_SIZER_X, s.GetX() );
         cfg->cfgWrite( ConfKeyEnums::GEN_SIZER_Y, s.GetY() );
     }
+
+    delete rdt;
 }
 
 void rdt_guiFrame::GetReady()

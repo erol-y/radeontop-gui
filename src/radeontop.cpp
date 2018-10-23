@@ -35,7 +35,8 @@ rdtop::rdtop()
 
 rdtop::~rdtop()
 {
-
+    if(drm_fd > 0)
+        drmClose(drm_fd);
 }
 
 bool rdtop::haserror() const
