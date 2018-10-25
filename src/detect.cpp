@@ -93,6 +93,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 			drm_fd = -1;
 		}
 
+		set_driver_enum(ver->name);
 		drmFreeVersion(ver);
 	}
 	else
@@ -111,11 +112,16 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
         snprintf(devpath, sizeof(devpath), "/dev/dri/card0");
     }
 
+
+    //TODO: What is the equal of RADEON_INFO_READ_REG @amdgpu ?
 	use_ioctl = 0;
 	if (drm_fd >= 0) {
 		authenticate_drm(drm_fd);
-		uint32_t rreg = 0x8010;
-		use_ioctl = get_drm_value(drm_fd, RADEON_INFO_READ_REG, &rreg);
+		uint32_t rreg = 0;
+		if(this->AmdGpuDriver == _AmdGpuDriver::radeon)
+            use_ioctl = get_drm_value(drm_fd, RADEON_INFO_READ_REG, &rreg, _AmdGpuDriver::radeon);
+		else if(this->AmdGpuDriver == _AmdGpuDriver::amdgpu)
+            use_ioctl = 1;
 	}
 
 	if (!use_ioctl) {
@@ -148,6 +154,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		}
 
 		strcpy(drm_name, ver->name);
+		set_driver_enum(ver->name);
         m_drm_version.version_major = ver->version_major;
         m_drm_version.version_minor = ver->version_minor;
         m_drm_version.version_patchlevel = ver->version_patchlevel;
@@ -157,13 +164,13 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		// No version indicator, so we need to test once
 		// We use different codepaths for radeon and amdgpu
 		// We store vram_size and check below if the ret value is sane
-		if (strcmp(drm_name, "radeon") == 0) {
+		if (AmdGpuDriver == _AmdGpuDriver::radeon) {
 			struct drm_radeon_gem_info gem;
 
 			ret = drmCommandWriteRead(drm_fd, DRM_RADEON_GEM_INFO, &gem, sizeof(gem));
 			vramsize = gem.vram_size;
 			gttsize = gem.gart_size;
-		} else if (strcmp(drm_name, "amdgpu") == 0) {
+		} else if (AmdGpuDriver == _AmdGpuDriver::amdgpu) {
 #ifdef ENABLE_AMDGPU
 			struct drm_amdgpu_memory_info vram_gtt = {};
 

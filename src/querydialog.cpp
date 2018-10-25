@@ -33,12 +33,12 @@ QDialog::QDialog(wxWindow * parent)
 
     if(rdtFrame->GetRadeonHandler() != NULL && !rdtFrame->GetRadeonHandler()->haserror())
     {
-        if (strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "radeon") == 0)
+        if (rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
         {
             QchoiceAMD->Hide();
             bSizer2->Remove((wxSizer*) QchoiceAMD);
         }
-        else if(strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "amdgpu") == 0)
+        else if(rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::amdgpu)
         {
             QchoiceRadeon->Hide();
         }
@@ -63,7 +63,7 @@ void QDialog::OnQueryClose(wxCloseEvent& event)
 
 void QDialog::OnQChoiceR(wxCommandEvent& event)
 {
-    if (strcmp(rdtFrame->GetRadeonHandler()->get_drm_name(), "radeon") == 0)
+    if (rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
     {
         unsigned long val = 0;
         signed long sval = 0;
@@ -154,7 +154,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
         case 1: //SENSORS
             {
                 struct radeontop::m_amdgpu_sensor * sensor = new radeontop::m_amdgpu_sensor();
-
+                QtextCtrl1->Clear();
                 amd->ReadSensor(sensor, 0);
 #ifdef AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
                 wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\npstate_sclk:%d\npstate_mclk:%d\n",
@@ -169,7 +169,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                              sensor->pstate_mclk);
 
 #else
-                wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\n",
+                wxLogMessage("\nGPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\n",
                              sensor->gfx_sclk,
                              sensor->gfx_mclk,
                              sensor->gpu_temp /100, /* get temperature in millidegrees C */
@@ -184,6 +184,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
         case 2: //HARDWARE
             {
                 radeontop::amdgpu_dev_info info;
+                QtextCtrl1->Clear();
                 wxString w(">>>>> Device Info: <<<<<\n");
 
                 if(!amd->GetDevInfo(&info))
@@ -235,6 +236,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 memset(&uvd, 0, sizeof(uvd));
                 radeontop::amdgpu_uvd_handles * p = &uvd;
                 amd->GetQueryA(AMDGPU_INFO_NUM_HANDLES, (unsigned long long*)p, sizeof(uvd));
+                QtextCtrl1->Clear();
 
                 if(p == NULL)
                     break;
@@ -247,6 +249,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 unsigned char c;
                 c = amd->GetClockTable().size();
                 wxString s;
+                QtextCtrl1->Clear();
                 s << wxString::Format("VCE table entry count: %d\n", c);
                 for(unsigned char i = 0; i < c; ++i)
                     s << wxString::Format("\t%u --> sclk:%u  eclk:%u  mclk:%u\n",

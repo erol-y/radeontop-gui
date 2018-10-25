@@ -45,6 +45,13 @@ enum {
 	MMAP_SIZE = 0x14
 };
 
+enum _AmdGpuDriver
+{
+    amdgpu,
+    radeon,
+    not_amd
+};
+
 #ifndef RADEON_INFO_VRAM_USAGE
 #define RADEON_INFO_VRAM_USAGE 0x1e
 #endif
@@ -151,6 +158,7 @@ class rdtop
         struct bits_t get_bits() const { return bits; }
         int get_drm_handle() const { return drm_fd; }
         const char * get_drm_name() const { return drm_name; }
+        _AmdGpuDriver get_driver_enum() const { return AmdGpuDriver; }
         void get_drm_version(struct _m_drm_version *);
         const char * get_str_busid() const { return busid; }
         const char * get_str_devid() const { return devid; }
@@ -170,6 +178,7 @@ class rdtop
         bool m_err;
         struct bits_t bits;
         struct _m_drm_version m_drm_version;
+        _AmdGpuDriver AmdGpuDriver;
 
         //detect.cpp
         unsigned int init_pci(unsigned char, const unsigned char);
@@ -183,7 +192,8 @@ class rdtop
         int use_ioctl;
 
         //radeontop.cpp
-        int get_drm_value(int, unsigned, uint32_t *);
+        void set_driver_enum(const char *);
+        int get_drm_value(int, unsigned, uint32_t *, _AmdGpuDriver);
         unsigned int Ticks;
         const void * area;
         int family;
