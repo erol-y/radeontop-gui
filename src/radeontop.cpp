@@ -68,11 +68,11 @@ bool rdtop::init_rdtop()
     return true;
 }
 
-int rdtop::get_drm_value(int fd, unsigned request, uint32_t *out, _AmdGpuDriver driv)
+int rdtop::get_drm_value(int fd, unsigned request, uint32_t *out)
 {
     int retval;
 
-    if(driv == _AmdGpuDriver::radeon)
+    if(AmdGpuDriver == _AmdGpuDriver::radeon)
     {
         struct drm_radeon_info info = {};
         info.value = (unsigned long)out;
@@ -80,7 +80,7 @@ int rdtop::get_drm_value(int fd, unsigned request, uint32_t *out, _AmdGpuDriver 
         retval = drmCommandWriteRead(fd, DRM_RADEON_INFO, &info, sizeof(info));
         return !retval;
     }
-	else if(driv == _AmdGpuDriver::amdgpu)
+	else if(AmdGpuDriver == _AmdGpuDriver::amdgpu)
     {
         struct drm_amdgpu_info info = {};
         info.return_pointer = (unsigned long)out;
@@ -97,7 +97,7 @@ unsigned int rdtop::readgrbm()
 {
     if (use_ioctl) {
 		uint32_t reg = GRBM_STATUS;
-		get_drm_value(drm_fd, RADEON_INFO_READ_REG, &reg, _AmdGpuDriver::radeon);
+		get_drm_value(drm_fd, RADEON_INFO_READ_REG, &reg);
 		return reg;
 	} else {
 	    return * (const unsigned int *) (area + 0x10);

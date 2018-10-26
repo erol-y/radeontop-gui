@@ -84,7 +84,8 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
     // DRM support for VRAM
     drm_fd = drmOpen(NULL, busid);
-	if (drm_fd >= 0) {
+	if(drm_fd >= 0)
+    {
 		drmVersionPtr ver = drmGetVersion(drm_fd);
 		if (strcmp(ver->name, "radeon") != 0 && strcmp(ver->name, "amdgpu") != 0)
         {
@@ -104,35 +105,43 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 	if (drm_fd < 0 && access("/dev/ati/card0", F_OK) == 0) // fglrx path
     {
         drm_fd = open("/dev/ati/card0", O_RDWR);
+        if(drm_fd > 0)
+            set_driver_enum(drmGetVersion(drm_fd)->name);
+
         snprintf(devpath, sizeof(devpath), "/dev/ati/card0");
     }
 	else if (drm_fd < 0 && access("/dev/dri/card0", F_OK) == 0)
     {
         drm_fd = open("/dev/dri/card0", O_RDWR);
+        if(drm_fd > 0)
+            set_driver_enum(drmGetVersion(drm_fd)->name);
+
         snprintf(devpath, sizeof(devpath), "/dev/dri/card0");
     }
 
 
     //TODO: What is the equal of RADEON_INFO_READ_REG @amdgpu ?
-	use_ioctl = 0;
-	if (drm_fd >= 0) {
-		authenticate_drm(drm_fd);
-		uint32_t rreg = 0;
-		if(this->AmdGpuDriver == _AmdGpuDriver::radeon)
-            use_ioctl = get_drm_value(drm_fd, RADEON_INFO_READ_REG, &rreg, _AmdGpuDriver::radeon);
-		else if(this->AmdGpuDriver == _AmdGpuDriver::amdgpu)
-            use_ioctl = 1;
-	}
+    use_ioctl = 0;
+    if(drm_fd >= 0)
+    {
+        authenticate_drm(drm_fd);
+        uint32_t rreg = 0;
+        if(this->AmdGpuDriver == _AmdGpuDriver::radeon)
+            use_ioctl = get_drm_value(drm_fd, RADEON_INFO_READ_REG, &rreg);
+        else if(this->AmdGpuDriver == _AmdGpuDriver::amdgpu)
+            use_ioctl = 0;
+    }
 
-	if (!use_ioctl) {
-		int mem = open("/dev/mem", O_RDONLY);
-		if_err(mem < 0, "Cannot access GPU registers, are you root?")
+    if(!use_ioctl)
+    {
+        int mem = open("/dev/mem", O_RDONLY);
+        if_err(mem < 0, "Cannot access GPU registers, are you root?")
 
-		area = mmap(NULL, MMAP_SIZE, PROT_READ, MAP_PRIVATE, mem,
-				dev->regions[reg].base_addr + 0x8000);
+        area = mmap(NULL, MMAP_SIZE, PROT_READ, MAP_PRIVATE, mem,
+                dev->regions[reg].base_addr + 0x8000);
 
         if_err(area == MAP_FAILED, "mmap failed")
-	}
+    }
 
 	bits.vram = 0;
 	bits.gtt = 0;
@@ -159,7 +168,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
         m_drm_version.version_minor = ver->version_minor;
         m_drm_version.version_patchlevel = ver->version_patchlevel;
 
-		drmFreeVersion(ver);
+        drmFreeVersion(ver);
 
 		// No version indicator, so we need to test once
 		// We use different codepaths for radeon and amdgpu
@@ -243,14 +252,14 @@ unsigned long long rdtop::getvram()
     int ret = -1;
 	unsigned long long val = 0;
 
-	if (strcmp(drm_name, "radeon") == 0) {
+	if (AmdGpuDriver == _AmdGpuDriver::radeon) {
 		struct drm_radeon_info info;
 		memset(&info, 0, sizeof(info));
 		info.value = (unsigned long) &val;
 		info.request = RADEON_INFO_VRAM_USAGE;
 
 		ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
-	} else if (strcmp(drm_name, "amdgpu") == 0) {
+	} else if (AmdGpuDriver == _AmdGpuDriver::amdgpu) {
 #ifdef ENABLE_AMDGPU
 		struct drm_amdgpu_info request;
 		memset(&request, 0, sizeof(request));
@@ -271,14 +280,14 @@ unsigned long long rdtop::getgtt()
     int ret = -1;
 	unsigned long long val = 0;
 
-	if (strcmp(drm_name, "radeon") == 0) {
+	if (AmdGpuDriver == _AmdGpuDriver::radeon) {
 		struct drm_radeon_info info;
 		memset(&info, 0, sizeof(info));
 		info.value = (unsigned long) &val;
 		info.request = RADEON_INFO_GTT_USAGE;
 
 		ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
-	} else if (strcmp(drm_name, "amdgpu") == 0) {
+	} else if (AmdGpuDriver == _AmdGpuDriver::radeon) {
 #ifdef ENABLE_AMDGPU
 		struct drm_amdgpu_info info;
 
@@ -300,7 +309,7 @@ unsigned int rdtop::get_sclk()
     int ret = -1;
 	unsigned long long val = 0;
 
-	if (strcmp(drm_name, "radeon") == 0)
+	if (AmdGpuDriver == _AmdGpuDriver::radeon)
     {
 		struct drm_radeon_info info;
 		memset(&info, 0, sizeof(info));
@@ -309,7 +318,7 @@ unsigned int rdtop::get_sclk()
 
 		ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
 	}
-	else if (strcmp(drm_name, "amdgpu") == 0)
+	else if (AmdGpuDriver == _AmdGpuDriver::amdgpu)
     {
 #ifdef ENABLE_AMDGPU
 		struct drm_amdgpu_info info;
@@ -332,7 +341,7 @@ unsigned int rdtop::get_mclk()
     int ret = -1;
 	unsigned long long val = 0;
 
-	if (strcmp(drm_name, "radeon") == 0)
+	if (AmdGpuDriver == _AmdGpuDriver::radeon)
     {
 		struct drm_radeon_info info;
 		memset(&info, 0, sizeof(info));
@@ -341,7 +350,7 @@ unsigned int rdtop::get_mclk()
 
 		ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
 	}
-	else if (strcmp(drm_name, "amdgpu") == 0)
+	else if (AmdGpuDriver == _AmdGpuDriver::amdgpu)
     {
 #ifdef ENABLE_AMDGPU
 		struct drm_amdgpu_info info;

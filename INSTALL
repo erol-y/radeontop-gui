@@ -15,3 +15,8 @@ Be root and run;
 
 make deskfile=1 install
 
+There will be two executable files at usr/sbin :
+radeontop-gui.v1 => Compiled (main) file
+radeontop-gui    => Script (helper) file
+
+Type `radeontop-gui -h` to see usage.

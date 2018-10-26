@@ -193,7 +193,7 @@ class rdtop
 
         //radeontop.cpp
         void set_driver_enum(const char *);
-        int get_drm_value(int, unsigned, uint32_t *, _AmdGpuDriver);
+        int get_drm_value(int, unsigned, uint32_t *);
         unsigned int Ticks;
         const void * area;
         int family;
