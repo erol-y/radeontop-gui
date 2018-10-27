@@ -16,29 +16,32 @@
 
 #include "../include/rdt_guiMain.h"
 
+static radeontop::rdtop * rdt;
+
 QDialog::QDialog(wxWindow * parent)
     : QueryDialog(parent)
 {
     this->rdtFrame = (rdt_guiFrame *) parent;
+    rdt = rdtFrame->GetRadeonHandler();
     wxLog::SetActiveTarget(new wxLogTextCtrl(QtextCtrl1));
 
-    wxLogMessage("Bus: %s", rdtFrame->GetRadeonHandler()->get_str_busid());
-    wxLogMessage("%s", rdtFrame->GetRadeonHandler()->get_str_devid());
-    wxLogMessage("Path: %s",rdtFrame->GetRadeonHandler()->get_str_devpath());
+    wxLogMessage("Bus: %s", rdt->get_str_busid());
+    wxLogMessage("%s", rdt->get_str_devid());
+    wxLogMessage("Path: %s",rdt->get_str_devpath());
     wxLogMessage("Driver: %s  %u.%u.%u\n",
-                 rdtFrame->GetRadeonHandler()->get_drm_name(),
+                 rdt->get_drm_name(),
                  rdtFrame->GetDrmVerInfo().version_major,
                  rdtFrame->GetDrmVerInfo().version_minor,
                  rdtFrame->GetDrmVerInfo().version_patchlevel);
 
-    if(rdtFrame->GetRadeonHandler() != NULL && !rdtFrame->GetRadeonHandler()->haserror())
+    if(rdt != NULL && !rdt->haserror())
     {
-        if (rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
+        if (rdt->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
         {
             QchoiceAMD->Hide();
             bSizer2->Remove((wxSizer*) QchoiceAMD);
         }
-        else if(rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::amdgpu)
+        else if(rdt->get_driver_enum() == radeontop::_AmdGpuDriver::amdgpu)
         {
             QchoiceRadeon->Hide();
         }
@@ -63,7 +66,7 @@ void QDialog::OnQueryClose(wxCloseEvent& event)
 
 void QDialog::OnQChoiceR(wxCommandEvent& event)
 {
-    if (rdtFrame->GetRadeonHandler()->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
+    if (rdt->get_driver_enum() == radeontop::_AmdGpuDriver::radeon)
     {
         unsigned long val = 0;
         signed long sval = 0;
@@ -72,7 +75,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
         {
         case 1: //CLOCK_CRYSTAL_FREQ
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_CLOCK_CRYSTAL_FREQ, &val))
                 {
                     wxLogMessage("Crystal Frequency: %u Hz (%u kHz)", (unsigned)val, unsigned (val/1000));
                 }
@@ -81,56 +84,56 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
             }
         case 2: //NUM_TILE_PIPES
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_NUM_TILE_PIPES, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_NUM_TILE_PIPES, &val))
                     wxLogMessage("Tile Pipes count: %u", (unsigned)val);
                 //else
                 break;
             }
         case 3: //RADEON_INFO_MAX_SE
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SE, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_MAX_SE, &val))
                     wxLogMessage("Number of Shader Engines: %u", (unsigned)val);
                 //else
                 break;
             }
         case 4: //MAX_SH_PER_SE
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SH_PER_SE, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_MAX_SH_PER_SE, &val))
                     wxLogMessage("Number of shaders per engine: %u", (unsigned)val);
 
                 break;
             }
         case 5: //MAX_SCLK
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_MAX_SCLK, &val))
                     wxLogMessage("Maximum source clock: %u kHz (%u mHz)", (unsigned)val, unsigned(val/1000));
 
                 break;
             }
         case 6: //VCE_FW_VERSION
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_VCE_FW_VERSION, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_VCE_FW_VERSION, &val))
                     wxLogMessage("VCE firmware version: %u", (unsigned)val);
 
                 break;
             }
         case 7: //VCE_FB_VERSION
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_VCE_FB_VERSION, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_VCE_FB_VERSION, &val))
                     wxLogMessage("VCE FB Version: %u", (unsigned)val);
 
                 break;
             }
         case 8: //ACTIVE_CU_COUNT
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_ACTIVE_CU_COUNT, &val))
+                if(!rdt->GetQueryR(RADEON_INFO_ACTIVE_CU_COUNT, &val))
                     wxLogMessage("Active Compute Unit count: %u", (unsigned)val);
 
                 break;
             }
         case 9: //CURRENT_GPU_TEMP
             {
-                if(!rdtFrame->GetRadeonHandler()->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &sval))
+                if(!rdt->GetQueryR(RADEON_INFO_CURRENT_GPU_TEMP, &sval))
                     wxLogMessage("GPU Temperature: %d", (signed)sval);
 
                 break;
@@ -146,7 +149,7 @@ void QDialog::OnQChoiceR(wxCommandEvent& event)
 void QDialog::OnQChoiceA(wxCommandEvent& event)
 {
 #ifdef ENABLE_AMDGPU
-    class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdtFrame->GetRadeonHandler()->get_drm_handle());
+    class radeontop::m_amdgpu_info * amd = new radeontop::m_amdgpu_info(rdt->get_drm_handle());
 
     /**TODO: Edit labels as readable as much */
     switch(QchoiceAMD->GetSelection())
