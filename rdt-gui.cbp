@@ -17,9 +17,6 @@
 				<Compiler>
 					<Add option="-fPIC" />
 					<Add option="-g" />
-					<Add option="-ffunction-sections -fdata-sections" />
-					<Add option="`pkg-config --cflags pciaccess`" />
-					<Add option="`pkg-config --cflags libdrm`" />
 					<Add option="`wx-config --debug=yes --cflags`" />
 					<Add option="-DENABLE_AMDGPU=1" />
 				</Compiler>
@@ -38,9 +35,6 @@
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-ffunction-sections -fdata-sections" />
-					<Add option="`pkg-config --cflags pciaccess`" />
-					<Add option="`pkg-config --cflags libdrm`" />
 					<Add option="`wx-config  --cflags`" />
 					<Add option="-DENABLE_AMDGPU=1" />
 				</Compiler>
@@ -55,6 +49,10 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-ffunction-sections -fdata-sections" />
+			<Add option="`pkg-config --cflags pciaccess`" />
+			<Add option="`pkg-config --cflags libdrm`" />
+			<Add option="-I./include" />
 		</Compiler>
 		<Linker>
 			<Add option="`wx-config --libs`" />

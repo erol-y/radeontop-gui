@@ -14,7 +14,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/cputop.h"
+#include "cputop.h"
 
 
 namespace cputop {

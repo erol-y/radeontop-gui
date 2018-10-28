@@ -14,7 +14,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/rdt_guiMain.h"
+#include "rdt_guiMain.h"
 
 static radeontop::rdtop * rdt;
 

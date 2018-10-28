@@ -34,7 +34,7 @@ LDFLAGS_SECTIONED = -Wl,-gc-sections
 
 CFLAGS ?= -Os
 CFLAGS += -Wall -Wextra -pthread
-CFLAGS += -Iinclude
+CFLAGS += -I./include
 CFLAGS += $(CFLAGS_SECTIONED)
 CFLAGS += $(shell pkg-config --cflags pciaccess)
 CFLAGS += $(shell pkg-config --cflags libdrm)

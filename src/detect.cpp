@@ -15,14 +15,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/radeontop.h"
 #include <pciaccess.h>
 #include <dirent.h>
+#include "radeontop.h"
 
 #define if_err(e, s) if(e) {m_err = true; std::cout << s << std::endl; return 0;}
 #define if_n_err(e, s) if(!e) {m_err = true; std::cout << s << std::endl; return 0;}
 
 namespace radeontop {
+
+#define PCI_VENDOR_ATI  0x1002
+#define DEV_FGLRX_PATH  "/dev/ati/card0"
+#define DEV_AMDGPU_PATH "/dev/dri/card0"
 
 unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 {
@@ -35,7 +39,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
     struct pci_id_match match;
 
-    match.vendor_id = 0x1002;
+    match.vendor_id = PCI_VENDOR_ATI;
 	match.device_id = PCI_MATCH_ANY;
 	match.subvendor_id = PCI_MATCH_ANY;
 	match.subdevice_id = PCI_MATCH_ANY;
@@ -95,30 +99,34 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		}
 
 		set_driver_enum(ver->name);
+		if( access(DEV_FGLRX_PATH, F_OK) == 0 )
+            snprintf(devpath, sizeof(devpath), DEV_FGLRX_PATH);
+        else if( access(DEV_AMDGPU_PATH, F_OK) == 0 )
+            snprintf(devpath, sizeof(devpath), DEV_AMDGPU_PATH);
+
 		drmFreeVersion(ver);
 	}
 	else
     {
         snprintf(drm_name, sizeof(drm_name), "???");
+
+        if( access(DEV_FGLRX_PATH, F_OK) == 0 )
+        {
+            drm_fd = open(DEV_FGLRX_PATH, O_RDWR);
+            if(drm_fd > 0)
+                set_driver_enum(drmGetVersion(drm_fd)->name);
+
+            snprintf(devpath, sizeof(devpath), DEV_FGLRX_PATH);
+        }
+        else if( access(DEV_AMDGPU_PATH, F_OK) == 0 )
+        {
+            drm_fd = open(DEV_AMDGPU_PATH, O_RDWR);
+            if(drm_fd > 0)
+                set_driver_enum(drmGetVersion(drm_fd)->name);
+
+            snprintf(devpath, sizeof(devpath), DEV_AMDGPU_PATH);
+        }
     }
-
-	if (drm_fd < 0 && access("/dev/ati/card0", F_OK) == 0) // fglrx path
-    {
-        drm_fd = open("/dev/ati/card0", O_RDWR);
-        if(drm_fd > 0)
-            set_driver_enum(drmGetVersion(drm_fd)->name);
-
-        snprintf(devpath, sizeof(devpath), "/dev/ati/card0");
-    }
-	else if (drm_fd < 0 && access("/dev/dri/card0", F_OK) == 0)
-    {
-        drm_fd = open("/dev/dri/card0", O_RDWR);
-        if(drm_fd > 0)
-            set_driver_enum(drmGetVersion(drm_fd)->name);
-
-        snprintf(devpath, sizeof(devpath), "/dev/dri/card0");
-    }
-
 
     //TODO: What is the equal of RADEON_INFO_READ_REG @amdgpu ?
     use_ioctl = 0;
@@ -204,7 +212,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
 		ret = getvram();
 		if (ret == 0) {
-			if (strcmp(drm_name, "amdgpu") == 0) {
+			if (AmdGpuDriver == _AmdGpuDriver::amdgpu) {
 #ifndef ENABLE_AMDGPU
 				printf(("amdgpu DRM driver is used, but amdgpu VRAM usage reporting is not enabled\n"));
 #endif
@@ -217,7 +225,7 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 
 		ret = getgtt();
 		if (ret == 0) {
-			if (strcmp(drm_name, "amdgpu") == 0) {
+			if (AmdGpuDriver == _AmdGpuDriver::amdgpu) {
 #ifndef ENABLE_AMDGPU
 				printf(("amdgpu DRM driver is used, but amdgpu GTT usage reporting is not enabled\n"));
 #endif
@@ -287,7 +295,7 @@ unsigned long long rdtop::getgtt()
 		info.request = RADEON_INFO_GTT_USAGE;
 
 		ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
-	} else if (AmdGpuDriver == _AmdGpuDriver::radeon) {
+	} else if (AmdGpuDriver == _AmdGpuDriver::amdgpu) {
 #ifdef ENABLE_AMDGPU
 		struct drm_amdgpu_info info;
 

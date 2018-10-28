@@ -14,8 +14,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/rdt_guiMain.h"
-#include "../include/conf.h"
+#include "rdt_guiMain.h"
+#include "conf.h"
 
 static ConfigFile * cfg = NULL;
 
