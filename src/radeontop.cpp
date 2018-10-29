@@ -239,6 +239,17 @@ std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> m_amdgpu_info::Ge
     return vce_clock_table;
 }
 
+bool m_amdgpu_info::fusion_flag()
+{
+#ifdef ENABLE_AMDGPU
+    amdgpu_dev_info info = {};
+    if(GetDevInfo(&info))
+        if(info.ids_flags == AMDGPU_IDS_FLAGS_FUSION)
+            return true;
+#endif // ENABLE_AMDGPU
+    return false;
+}
+
 // Constructor
 m_amdgpu_info::m_amdgpu_info(int handle)
     : hDRM(handle)

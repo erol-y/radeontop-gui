@@ -28,6 +28,8 @@ namespace radeontop {
 #define DEV_FGLRX_PATH  "/dev/ati/card0"
 #define DEV_AMDGPU_PATH "/dev/dri/card0"
 
+static unsigned long long igpu_mclk = 0;
+
 unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 {
     int ret = pci_system_init();
@@ -235,13 +237,26 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
 		}
 
 		bits.gtt = 1;
+
+        /** integrated (a.h.a. fusion) GPU
+        *   the driver returns zero.
+        *   So, for once, we will read "max_memory_clock" info from device query method.
+        */
+        m_amdgpu_info inf(drm_fd);
+        bFusion = inf.fusion_flag();
+        if(bFusion)
+        {
+            amdgpu_dev_info query = {};
+            inf.GetDevInfo(&query);
+            igpu_mclk = query.max_memory_clock / 1000;
+        }
     }
 
     out:
 
-	pci_system_cleanup();
+    pci_system_cleanup();
 
-	return device_id;
+    return device_id;
 }
 
 int rdtop::getfamily(unsigned int id)
@@ -370,6 +385,9 @@ unsigned int rdtop::get_mclk()
 
 		ret = drmCommandWriteRead(drm_fd, DRM_AMDGPU_INFO, &info, sizeof(info));
 
+		/** integrated (a.h.a. fusion) GPU */
+		if(val == 0 && bFusion)
+            return igpu_mclk;
 #endif
 	}
 	if (ret) return 0;

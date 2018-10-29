@@ -127,6 +127,7 @@ public:
     bool GetDevInfo(amdgpu_dev_info *);
     void GetQueryA(int, unsigned long long *, unsigned); //Query, ret_addr, ret_size
     std::map<unsigned char, drm_amdgpu_info_vce_clock_table_entry> GetClockTable(bool = false); //bool refresh = false
+    bool fusion_flag();
 
     m_amdgpu_info(int);
     ~m_amdgpu_info();
@@ -179,6 +180,7 @@ class rdtop
         struct bits_t bits;
         struct _m_drm_version m_drm_version;
         _AmdGpuDriver AmdGpuDriver;
+        bool bFusion;
 
         //detect.cpp
         unsigned int init_pci(unsigned char, const unsigned char);
