@@ -69,7 +69,7 @@ void rdt_guiFrame::GetReady()
     }
 
     int x, y;
-    cfg->cfgRead(ConfKeyEnums::GEN_SIZER_X, &x, 470);
+    cfg->cfgRead(ConfKeyEnums::GEN_SIZER_X, &x, 505);
     cfg->cfgRead(ConfKeyEnums::GEN_SIZER_Y, &y, 325);
     bSizer1->SetMinSize(x, y);
     this->Fit();
