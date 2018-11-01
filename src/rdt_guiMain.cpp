@@ -110,9 +110,9 @@ void rdt_guiFrame::OnQuit(wxCommandEvent &event)
 
 void rdt_guiFrame::OnAbout(wxCommandEvent &event)
 {
-    wxString title = wxT("Radeontop GUI");
-    wxMessageBox(wxString::Format("%s %s", title, _(VERSION)), title);
-    wxUnusedVar(event);
+    AboutPage * about = new AboutPage(this);
+    wxString title = wxString::Format("%s %s", wxT("radeontop GUI "), wxT(VERSION));
+    about->st_aboutThis->SetLabel(title);
 }
 
 void rdt_guiFrame::OnSize(wxSizeEvent& event)

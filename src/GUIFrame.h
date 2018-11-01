@@ -160,7 +160,7 @@ class panelAbout : public wxPanel
 	protected:
 		wxStaticText* m_staticText28;
 		wxStaticLine* m_staticline3;
-		wxHyperlinkCtrl* m_hyperlink1;
+		wxHyperlinkCtrl* hyperlink_git;
 		wxStaticLine* m_staticline4;
 		wxButton* buttonAboutOK;
 

@@ -375,8 +375,8 @@ panelAbout::panelAbout( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	m_staticline3 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 	sizerAbout->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
 
-	m_hyperlink1 = new wxHyperlinkCtrl( this, wxID_ANY, wxT("Dev. Page @github.com"), wxT("https://github.com/erol-y/radeontop-gui"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
-	sizerAbout->Add( m_hyperlink1, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	hyperlink_git = new wxHyperlinkCtrl( this, wxID_ANY, wxT("Dev. Page @github.com"), wxT("https://github.com/erol-y/radeontop-gui"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	sizerAbout->Add( hyperlink_git, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_staticline4 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 	sizerAbout->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );

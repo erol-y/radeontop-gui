@@ -95,6 +95,16 @@ class rdt_guiFrame: public GUIFrame
         void OnPowerSelect(wxCommandEvent& event);
 };
 
+class AboutPage: public panelAbout
+{
+public:
+    AboutPage(wxWindow * parent) :panelAbout(parent) {  }
+    ~AboutPage() { }
+
+private:
+    void OnAboutOK(wxCommandEvent& event) { delete this; }
+};
+
 class QDialog: public QueryDialog
 {
     public:
