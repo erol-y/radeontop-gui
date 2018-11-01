@@ -355,6 +355,50 @@ GUIFrame::~GUIFrame()
 
 }
 
+panelAbout::panelAbout( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
+{
+	wxBoxSizer* sizerAbout;
+	sizerAbout = new wxBoxSizer( wxVERTICAL );
+
+	st_aboutThis = new wxStaticText( this, wxID_ANY, wxT("radeontop GUI"), wxDefaultPosition, wxDefaultSize, 0 );
+	st_aboutThis->Wrap( -1 );
+	st_aboutThis->SetFont( wxFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxT("Arial") ) );
+
+	sizerAbout->Add( st_aboutThis, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+	m_staticText28 = new wxStaticText( this, wxID_ANY, wxT("GPU monitoring tool"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText28->Wrap( -1 );
+	m_staticText28->SetFont( wxFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial") ) );
+
+	sizerAbout->Add( m_staticText28, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_staticline3 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	sizerAbout->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
+
+	m_hyperlink1 = new wxHyperlinkCtrl( this, wxID_ANY, wxT("Dev. Page @github.com"), wxT("https://github.com/erol-y/radeontop-gui"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	sizerAbout->Add( m_hyperlink1, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_staticline4 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	sizerAbout->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );
+
+	buttonAboutOK = new wxButton( this, wxID_ANY, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	sizerAbout->Add( buttonAboutOK, 0, wxALIGN_CENTER|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+
+	this->SetSizer( sizerAbout );
+	this->Layout();
+
+	// Connect Events
+	buttonAboutOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( panelAbout::OnAboutOK ), NULL, this );
+}
+
+panelAbout::~panelAbout()
+{
+	// Disconnect Events
+	buttonAboutOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( panelAbout::OnAboutOK ), NULL, this );
+
+}
+
 QueryDialog::QueryDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );

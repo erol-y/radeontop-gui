@@ -100,7 +100,7 @@ unsigned int rdtop::readgrbm()
 		get_drm_value(drm_fd, RADEON_INFO_READ_REG, &reg);
 		return reg;
 	} else {
-	    return * (const unsigned int *) (area + 0x10);
+	    return * (const unsigned int *) ((unsigned long)area + 0x10);
 	}
 }
 
@@ -134,8 +134,6 @@ int rdtop::GetQueryR(unsigned long CommandIndex, void * data)
     info.request = CommandIndex;
 
     ret = drmCommandWriteRead(drm_fd, DRM_RADEON_INFO, &info, sizeof(info));
-
-    //printf("%s val: %u\n", __FUNCTION__, *(unsigned int *)data);
 
     return ret;
 

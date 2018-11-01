@@ -24,13 +24,15 @@
 #include <wx/sizer.h>
 #include <wx/timer.h>
 #include <wx/frame.h>
+#include <wx/statline.h>
+#include <wx/hyperlink.h>
+#include <wx/button.h>
+#include <wx/panel.h>
 #include <wx/choice.h>
 #include <wx/textctrl.h>
 #include <wx/dialog.h>
 #include <wx/checkbox.h>
-#include <wx/statline.h>
 #include <wx/scrolwin.h>
-#include <wx/button.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -145,6 +147,32 @@ class GUIFrame : public wxFrame
 		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("radeontop GUI"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 505,325 ), long style = wxDEFAULT_FRAME_STYLE|wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
 
 		~GUIFrame();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class panelAbout
+///////////////////////////////////////////////////////////////////////////////
+class panelAbout : public wxPanel
+{
+	private:
+
+	protected:
+		wxStaticText* m_staticText28;
+		wxStaticLine* m_staticline3;
+		wxHyperlinkCtrl* m_hyperlink1;
+		wxStaticLine* m_staticline4;
+		wxButton* buttonAboutOK;
+
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnAboutOK( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+		wxStaticText* st_aboutThis;
+
+		panelAbout( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,190 ), long style = wxBORDER_SUNKEN|wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+		~panelAbout();
 
 };
 
