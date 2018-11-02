@@ -32,7 +32,7 @@ SOURCEDIR = src
 CFLAGS_SECTIONED = -ffunction-sections -fdata-sections
 LDFLAGS_SECTIONED = -Wl,-gc-sections
 
-CFLAGS ?= -Os
+CFLAGS ?= -O2
 CFLAGS += -Wall -Wextra -pthread
 CFLAGS += -I./include
 CFLAGS += $(CFLAGS_SECTIONED)

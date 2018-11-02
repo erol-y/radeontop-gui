@@ -102,7 +102,7 @@ public:
     ~AboutPage() { }
 
 private:
-    void OnAboutOK(wxCommandEvent& event) { delete this; }
+    void OnAboutOK(wxCommandEvent& event) { delete this; wxUnusedVar(event); }
 };
 
 class QDialog: public QueryDialog

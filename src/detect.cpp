@@ -30,7 +30,7 @@ namespace radeontop {
 
 static unsigned long long igpu_mclk = 0;
 
-unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem)
+unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem __attribute__((unused)))
 {
     int ret = pci_system_init();
     if(ret)
