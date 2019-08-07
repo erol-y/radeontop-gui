@@ -160,7 +160,7 @@ void QDialog::OnQChoiceA(wxCommandEvent& event)
                 QtextCtrl1->Clear();
                 amd->ReadSensor(sensor, 0);
 #ifdef AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK
-                wxLogMessage("GPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\npstate_sclk:%d\npstate_mclk:%d\n",
+                wxLogMessage("\nGPU:%d\nMEM:%d\nTemp:%d\nLoad:%d\nPower:%d\nVDDNB:%d\nVDDGFX:%d\npstate_sclk:%d\npstate_mclk:%d\n",
                              sensor->gfx_sclk,
                              sensor->gfx_mclk,
                              sensor->gpu_temp /100, /* get temperature in millidegrees C */
