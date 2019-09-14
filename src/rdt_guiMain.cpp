@@ -288,9 +288,15 @@ void rdt_guiFrame::mSetTimerVal(int _sec, bool bStart)
 
 void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
 {
-#define _ShowVal(a,b,c,d) a = 100.0 * (float) radeontop::results->a / rdt->get_ticks(); \
-        b->SetLabel(wxString::Format("%s:      %6.2f%%", d, a)); \
-        c->SetValue((int) a);
+#define _ShowVal(a,b,c,d) \
+    if(b->IsShown()) {                                                  \
+        a = 100.0 * (float)radeontop::results->a / rdt->get_ticks();    \
+        if( a >= 90.00)                                                 \
+            b->SetForegroundColour(wxColour(wxT("RED")));               \
+        else                                                            \
+            b->SetForegroundColour(wxColour(wxT("BLACK")));             \
+        b->SetLabel(wxString::Format("%s:      %6.2f%%", d, a));        \
+        c->SetValue((int) a); }
 
 
     float gui;
@@ -303,10 +309,10 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
     _ShowVal(ee, m_staticText_ee, m_gauge_ee, wxT("Event Engine"))
 
     float vgt;
-    _ShowVal(vgt, m_staticText_vgt, m_gauge_vgt, wxT("Vertex Grouper + Tesselator"))
+    _ShowVal(vgt, m_staticText_vgt, m_gauge_vgt, wxT("Vertex Group + Tesselator"))
 
     float ta;
-    _ShowVal(ta, m_staticText_ta, m_gauge_ta, wxT("Texture Addresser"))
+    _ShowVal(ta, m_staticText_ta, m_gauge_ta, wxT("Texture Addressing"))
 
     if(rdt->get_bits().tc)
     {
@@ -348,21 +354,39 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
     }
 #undef _ShowVal
 
-    m_staticText_vram->SetLabel(wxString::Format("VRAM  Total: %dM   /   Used: %dM",
-                                             (int)(rdt->vramsize / 1024 / 1024),
-                                             (int)(radeontop::results->vram / 1024 / 1024)));
+    unsigned mem_jit, mem_total, mem_prct;
 
-    m_gauge_vram->SetRange(rdt->vramsize / 1024 / 1024);
-    m_gauge_vram->SetValue((int)(radeontop::results->vram > rdt->vramsize) ?
-                                rdt->vramsize : radeontop::results->vram / 1024 / 1024);
+    mem_jit = (radeontop::results->vram / 1024 / 1024);
+    mem_total = (rdt->vramsize / 1024 / 1024);
+    mem_prct = (unsigned)(((double)radeontop::results->vram / rdt->vramsize) * 100);
+    if(mem_prct >= 90)
+        m_staticText_vram->SetForegroundColour(wxColour(wxT("RED")));
+    else
+        m_staticText_vram->SetForegroundColour(wxColour(wxT("BLACK")));
 
-    m_staticText_gtt->SetLabel(wxString::Format("GTT  Total: %dM   /   Used: %dM",
-                                                (int)(rdt->gttsize / 1024 / 1024),
-                                                (int)(radeontop::results->gtt / 1024 / 1024)));
+    m_staticText_vram->SetLabel(wxString::Format("VRAM  Total: %uMB   /   Used: %uMB    %u%%",
+                                                mem_total,
+                                                mem_jit,
+                                                ((mem_prct == 0) && (mem_jit != 0)) ? 1u : mem_prct));
 
-    m_gauge_gtt->SetRange((int) (rdt->gttsize / 1024 / 1024));
-    m_gauge_gtt->SetValue((unsigned int)(radeontop::results->gtt > rdt->gttsize) ?
-                          rdt->gttsize : (radeontop::results->gtt / 1024 / 1024));
+    m_gauge_vram->SetRange(mem_total);
+    m_gauge_vram->SetValue((mem_jit > mem_total) ? mem_total : mem_jit);
+
+    mem_jit = (radeontop::results->gtt / 1024 / 1024);
+    mem_total = (rdt->gttsize / 1024 / 1024);
+    mem_prct = (unsigned)(((double)radeontop::results->gtt / rdt->gttsize) * 100);
+    if(mem_prct >= 90)
+        m_staticText_gtt->SetForegroundColour(wxColour(wxT("RED")));
+    else
+        m_staticText_gtt->SetForegroundColour(wxColour(wxT("BLACK")));
+
+    m_staticText_gtt->SetLabel(wxString::Format("GTT  Total: %uMB   /   Used: %uMB    %u%%",
+                                                mem_total,
+                                                mem_jit,
+                                                ((mem_prct == 0) && (mem_jit != 0)) ? 1u : mem_prct));
+
+    m_gauge_gtt->SetRange(mem_total);
+    m_gauge_gtt->SetValue((mem_jit > mem_total) ? mem_total : mem_jit);
 
 
     statusBar->SetStatusText(wxString::Format("core: %dMhz / vmem: %dMhz",
