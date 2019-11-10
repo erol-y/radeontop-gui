@@ -20,22 +20,29 @@ static ConfigFile * conf = NULL;
 
 ConfigFile * ConfigFile::OnInit(const wxString& _name, const wxString& _path)
 {
-    wxString * file;
+    wxString file;
 
     if(_path == wxEmptyString)
-        file = new wxString(CONFIGFILE_DEF_PATH);
+        file.append(CONFIGFILE_DEF_PATH);
     else
-        file = new wxString(_path);
+        file.append(_path);
 
-    if(wxFileName::DirExists(file->data()) == false)
-        wxFileName::Mkdir(file->data());
-
-    if(_name ==wxEmptyString)
-        file->append(CONFIGFILE_DEF_NAME);
+    if(wxDirExists(file) == false)
+        wxMkdir(file);
     else
-        file->append(_name);
+        wxChmod(file, 0777);
 
-    conf = new ConfigFile(file->data());
+    if(_name == wxEmptyString)
+        file.append(CONFIGFILE_DEF_NAME);
+    else
+        file.append(_name);
+
+    conf = new ConfigFile(file);
+
+    /// To prevent file permissions error when the app runs without root privileges.
+    /// However, for the first run (config file non-exist) it would not set permissions.
+    /// Is this a wxWidgets bug?
+    conf->SetUmask(0677);
 
     return conf;
 }
@@ -55,8 +62,5 @@ ConfigFile::~ConfigFile()
 
 ConfigFile * ConfigFile::GetConfigFile()
 {
-    if(conf == NULL)
-        return OnInit();
-
     return conf;
 }

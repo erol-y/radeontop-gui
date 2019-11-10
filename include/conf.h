@@ -17,14 +17,6 @@
 #ifndef CONF_H_INCLUDED
 #define CONF_H_INCLUDED
 
-#ifndef _WX_STDPATHS_H_
-    #include <wx/stdpaths.h>
-#endif // _WX_STDPATHS_H_
-
-#ifndef   _FILECONF_H
-    #include <wx/fileconf.h>
-#endif // _FILECONF_H
-
 #include "confdef.h"
 
 class ConfigFile: public wxFileConfig

@@ -17,6 +17,16 @@
 #ifndef CONFDEF_H_INCLUDED
 #define CONFDEF_H_INCLUDED
 
+
+#ifndef _WX_STDPATHS_H_
+    #include <wx/stdpaths.h>
+#endif // _WX_STDPATHS_H_
+
+#ifndef   _FILECONF_H
+    #include <wx/fileconf.h>
+#endif // _FILECONF_H
+
+
 #define CONFIGFILE_DEF_NAME wxT("settings.ini")
 #define CONFIGFILE_DEF_PATH wxStandardPaths::Get().GetUserLocalDataDir() + wxFileName::GetPathSeparator()
 
