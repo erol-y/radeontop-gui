@@ -260,7 +260,12 @@ enum radeon_family {
 	VEGA12,
 	VEGA20,
 	RAVEN,
+	ARCTURUS,
 	NAVI10,
+	NAVI14,
+	RENOIR,
+	NAVI12,
+	SIENNA_CICHLID,
 };
 
 
