@@ -28,6 +28,7 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
 {
     rdt = NULL;
     qd = NULL;
+    cd = NULL;
     msec = -1;
 
     cfg = ConfigFile::GetConfigFile();
@@ -364,9 +365,9 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
     else
         m_staticText_vram->SetForegroundColour(wxColour(wxT("BLACK")));
 
-    m_staticText_vram->SetLabel(wxString::Format("VRAM  Total: %uMB   /   Used: %uMB    %u%%",
-                                                mem_total,
+    m_staticText_vram->SetLabel(wxString::Format("VRAM  Used: %uMB   /   Total: %uMB    %u%%",
                                                 mem_jit,
+                                                mem_total,
                                                 ((mem_prct == 0) && (mem_jit != 0)) ? 1u : mem_prct));
 
     m_gauge_vram->SetRange(mem_total);
@@ -380,9 +381,9 @@ void rdt_guiFrame::UpdateVal(wxTimerEvent& event)
     else
         m_staticText_gtt->SetForegroundColour(wxColour(wxT("BLACK")));
 
-    m_staticText_gtt->SetLabel(wxString::Format("GTT  Total: %uMB   /   Used: %uMB    %u%%",
-                                                mem_total,
+    m_staticText_gtt->SetLabel(wxString::Format("GTT  Used: %uMB   /   Total: %uMB    %u%%",
                                                 mem_jit,
+                                                mem_total,
                                                 ((mem_prct == 0) && (mem_jit != 0)) ? 1u : mem_prct));
 
     m_gauge_gtt->SetRange(mem_total);
