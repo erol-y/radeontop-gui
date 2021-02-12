@@ -29,7 +29,10 @@ rdt_guiFrame::rdt_guiFrame(wxFrame *frame)
     rdt = NULL;
     qd = NULL;
     cd = NULL;
+    pw = NULL;
     msec = -1;
+    m_drm_ver = {0};
+    is_radeontop_ok = false;
 
     cfg = ConfigFile::GetConfigFile();
     if(cfg == NULL)

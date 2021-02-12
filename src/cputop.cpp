@@ -53,7 +53,11 @@ bool cpufreq::GetFreqLimits(unsigned char cpu, unsigned long * min, unsigned lon
 
 cpufreq::cpufreq()
 {
-    cpufreq_get_freq_hardware(0)? isRoot = true :isRoot = false;
+    CpuCount = 0;
+
+    //TODO: User input
+    //cpufreq_get_freq_hardware(0)? isRoot = true :isRoot = false;
+    isRoot = false;
 }
 
 cpufreq::~cpufreq()

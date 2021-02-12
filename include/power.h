@@ -121,10 +121,11 @@ public:
     {
         bool b;
         b = conf->Read(PowerKeys[e], val);
-        if(b)
-            return b;
+        if(!b)
+        {
+            *val = defVal;
+        }
 
-        *val = defVal;
         return b;
     }
 
@@ -134,6 +135,8 @@ public:
 private:
     wxFileConfig * conf;
     bool m_error;
+
+    wxDECLARE_NO_COPY_CLASS(PowerSupply);
 };
 
 #endif // POWER_H_INCLUDED

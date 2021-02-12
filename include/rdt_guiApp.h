@@ -31,6 +31,9 @@ class rdt_guiApp : public wxApp
         virtual bool OnInit();
         virtual int OnExit();
 
+        rdt_guiApp() {}
+        ~rdt_guiApp() {}
+
 };
 
 #endif // RDT_GUIAPP_H

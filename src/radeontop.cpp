@@ -22,12 +22,15 @@ namespace radeontop {
 
 rdtop::rdtop()
 {
-    bits = {};
+    bits = {0};
     vramsize = 0;
     gttsize = 0;
     use_ioctl = 0;
     drm_fd = 0;
+    m_drm_version = {0};
+    area = NULL;
     family = 0;
+    bFusion = false;
     Ticks = 120;
     m_err = false;
     AmdGpuDriver = _AmdGpuDriver::not_amd;
