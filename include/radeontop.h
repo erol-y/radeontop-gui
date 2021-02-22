@@ -183,7 +183,7 @@ class rdtop
         bool bFusion;
 
         //detect.cpp
-        unsigned int init_pci(unsigned char, const unsigned char);
+        unsigned int init_pci(short, const unsigned char);
         int getfamily(unsigned int);
         void initbits(int);
         int drm_fd;

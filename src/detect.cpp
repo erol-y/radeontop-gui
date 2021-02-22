@@ -30,14 +30,10 @@ namespace radeontop {
 
 static unsigned long long igpu_mclk = 0;
 
-unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem __attribute__((unused)))
+unsigned int rdtop::init_pci(short bus, const unsigned char forcemem __attribute__((unused)))
 {
     int ret = pci_system_init();
-    if(ret)
-    {
-        this->m_err = true;
-        return 0;
-    }
+    if_err(ret, "Failed to init pciaccess")
 
     struct pci_id_match match;
 
@@ -52,16 +48,21 @@ unsigned int rdtop::init_pci(unsigned char bus, const unsigned char forcemem __a
     struct pci_device_iterator *iter = pci_id_match_iterator_create(&match);
 	struct pci_device *dev = NULL;
 	//char busid[32];
+	memset(busid, 0, sizeof(busid));
 
 	while ((dev = pci_device_next(iter))) {
 		pci_device_probe(dev);
 		if ((dev->device_class & 0x00ffff00) != 0x00030000 &&
 			(dev->device_class & 0x00ffff00) != 0x00038000)
 			continue;
-		snprintf(busid, sizeof(busid), "pci:%04x:%02x:%02x.%u",
+
+		if (bus < 0 || bus == dev->bus)
+		{
+            snprintf(busid, sizeof(busid), "pci:%04x:%02x:%02x.%u",
 				dev->domain, dev->bus, dev->dev, dev->func);
-		if (!bus || bus == dev->bus)
+
 			break;
+		}
 	}
 
 	if_n_err(dev, "Can't find Radeon cards")

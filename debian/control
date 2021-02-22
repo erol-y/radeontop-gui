@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 9)
  , libpciaccess-dev
  , libcpufreq-dev ( >= 001)
  , libdrm-dev (>= 2.4.63)
- , libwxgtk3.0-dev
+ , libwxgtk3.0-dev | libwxgtk3.0-gtk3-dev
 Standards-Version: 4.1.1
 Homepage: https://github.com/erol-y/radeontop-gui
 Vcs-Git: git://github.com/erol-y/radeontop-gui.git
@@ -21,7 +21,7 @@ Depends: ${shlibs:Depends}
  , libpciaccess0
  , libdrm2
  , libcpufreq0
- , libwxgtk3.0-0v5
+ , ibwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5
 Description: Utility to show Radeon GPU utilization
  radeontop is a small utility which allows one to monitor the utilization of
  Radeon GPUs starting from the R600 series and newer using undocumented

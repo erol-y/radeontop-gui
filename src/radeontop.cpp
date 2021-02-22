@@ -51,6 +51,10 @@ bool rdtop::haserror() const
 bool rdtop::init_rdtop()
 {
     unsigned int pciaddr = init_pci(0,0);
+
+    if(haserror())
+        init_pci(1,0);
+
     if(haserror())
         return false;
 
