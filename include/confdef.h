@@ -35,6 +35,7 @@ enum ConfKeyEnums
         GEN_UPDATE_INTERVAL = 0,    //int
         GEN_SIZER_X,                //int
         GEN_SIZER_Y,                //int
+        PCI_BUS,                    //short
         GPU_ITEM_GUI,               //bool
         GPU_ITEM_EE,                // "
         GPU_ITEM_VGT,
@@ -62,6 +63,7 @@ enum ConfKeyEnums
 static const wchar_t* ConfKeys[] = {wxT("GENERAL/update-interval"),
                                     wxT("GENERAL/frameX"),
                                     wxT("GENERAL/frameY"),
+                                    wxT("PCI/bus"),
                                     wxT("GPU/gui"),
                                     wxT("GPU/ee"),
                                     wxT("GPU/vgt"),

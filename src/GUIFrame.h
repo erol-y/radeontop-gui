@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep  6 2018)
+// C++ code generated with wxFormBuilder (version 3.9.0 Aug  5 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -51,6 +51,7 @@ class GUIFrame : public wxFrame
 		wxMenu* fileMenu;
 		wxMenu* settingmenu;
 		wxMenuItem* menuRefRate;
+		wxMenuItem* mPciAddr;
 		wxMenuItem* mSettingsSave;
 		wxMenu* viewmenu;
 		wxMenu* menuview_stats;
@@ -117,6 +118,7 @@ class GUIFrame : public wxFrame
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRefRate( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSetPciBus( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSaveExit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuReset( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewStats_gui( wxCommandEvent& event ) { event.Skip(); }
@@ -258,6 +260,29 @@ class DialogRR : public wxDialog
 
 		DialogRR( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Set Refresh Rate"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 255,124 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~DialogRR();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class DialogPCI
+///////////////////////////////////////////////////////////////////////////////
+class DialogPCI : public wxDialog
+{
+	private:
+
+	protected:
+		wxStaticText* m_staticText30;
+		wxButton* m_btnPciAddr;
+
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnSetPciBus( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+		wxTextCtrl* txtPciBus;
+
+		DialogPCI( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Set PCI Bus Address"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 237,133 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~DialogPCI();
 
 };
 

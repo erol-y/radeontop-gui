@@ -58,7 +58,10 @@ void rdt_guiFrame::GetReady()
     int interval;
     cfg->cfgRead(ConfKeyEnums::GEN_UPDATE_INTERVAL, &interval, 500);
 
-    if(!rdt->init_rdtop())
+    int m_pci_bus;
+    cfg->cfgRead(ConfKeyEnums::PCI_BUS, &m_pci_bus, 0);
+
+    if(!rdt->init_rdtop(m_pci_bus))
     {
         this->SetRadeontopState(false);
         this->SetStatusText(_T("Radeontop not initialized!"), 0);
@@ -244,6 +247,15 @@ void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
     grr->Show();
 
     wxUnusedVar(event);
+}
+
+void rdt_guiFrame::OnSetPciBus(wxCommandEvent& event)
+{
+    DialogPCI * m_dlg = new DialogPCI(this);
+    int val;
+    cfg->cfgRead(ConfKeyEnums::PCI_BUS, &val, 0);
+    m_dlg->txtPciBus->SetValue(wxString::Format("%d", val));
+    m_dlg->Show();
 }
 
 void rdt_guiFrame::OnMenuSaveExit(wxCommandEvent& event)
@@ -588,6 +600,28 @@ void GUIRefreshRate::OnSetVal(wxCommandEvent& event)
         rdtFrame->mSetTimerVal(val);
         cfg->cfgWrite(ConfKeyEnums::GEN_UPDATE_INTERVAL, val);
     }
+
+    delete this;
+    wxUnusedVar(event);
+}
+
+/********************************************************/
+
+PciBusDialog::PciBusDialog(wxWindow * parent) : DialogPCI(parent)
+{
+    this->rdtFrame = (rdt_guiFrame *) parent;
+}
+
+void PciBusDialog::OnSetPciBus(wxCommandEvent& event)
+{
+    int val = 0;
+    val = wxAtoi(txtPciBus->GetValue());
+    if(val < 0)
+    {
+        val = 0;
+    }
+
+    cfg->cfgWrite(ConfKeyEnums::PCI_BUS, val);
 
     delete this;
     wxUnusedVar(event);

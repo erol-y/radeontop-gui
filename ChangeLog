@@ -1,3 +1,7 @@
+2021-03-13 v1.6.7 (erol-y)
+ * Fix one false error message.
+ * New menu item to allow setting pci bus address.
+
 2018-10-21 v1.5.4.2 (erol-y)
  * Structural changes on project tree.
 

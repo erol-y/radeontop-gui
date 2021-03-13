@@ -65,22 +65,25 @@ unsigned int rdtop::init_pci(short bus, const unsigned char forcemem __attribute
 		}
 	}
 
-	if_n_err(dev, "Can't find Radeon cards")
+	pci_iterator_destroy(iter);
 
-	if(!haserror())
+	if(dev != NULL)
     {
-        snprintf(devid, sizeof(devid), "ven:%.4X_dev:%.4X_subven:%.4X_subdev:%.4X",
+        snprintf(devid, sizeof(devid), "ven:%.4X dev:%.4X subven:%.4X subdev:%.4X",
                                           dev->vendor_id,
                                           dev->device_id,
                                           dev->subvendor_id,
                                           dev->subdevice_id);
-        }
+
+        printf("%s\n\n", devid);
+        printf("%s\n\n", busid);
+    }
     else
     {
         memset(devid, 0, sizeof(devid));
+        //printf("Can't find Radeon card\n");
+        return 0;
     }
-
-	pci_iterator_destroy(iter);
 
 	const unsigned int device_id = dev->device_id;
 	int reg = 2;

@@ -153,7 +153,7 @@ class rdtop
         unsigned long long gttsize;
 
         bool haserror() const;
-        bool init_rdtop();
+        bool init_rdtop(short int);
         void set_ticks(unsigned int t) { (t > 10UL)&&(t < 1000UL) ? Ticks = t : Ticks = 120UL; }
         int get_ticks() { return Ticks; }
         struct bits_t get_bits() const { return bits; }

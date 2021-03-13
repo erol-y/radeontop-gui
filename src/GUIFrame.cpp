@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep  6 2018)
+// C++ code generated with wxFormBuilder (version 3.9.0 Aug  5 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -30,6 +30,9 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	settingmenu = new wxMenu();
 	menuRefRate = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("&Refresh Rate") ) , wxEmptyString, wxITEM_NORMAL );
 	settingmenu->Append( menuRefRate );
+
+	mPciAddr = new wxMenuItem( settingmenu, wxID_ANY, wxString( wxT("PCI Address") ) , wxEmptyString, wxITEM_NORMAL );
+	settingmenu->Append( mPciAddr );
 
 	settingmenu->AppendSeparator();
 
@@ -321,6 +324,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GUIFrame::OnSize ) );
 	fileMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ), this, menuFileQuit->GetId());
 	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnRefRate ), this, menuRefRate->GetId());
+	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnSetPciBus ), this, mPciAddr->GetId());
 	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnMenuSaveExit ), this, mSettingsSave->GetId());
 	settingmenu->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnMenuReset ), this, mSettingsReset->GetId());
 	menuview_stats->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewStats_gui ), this, mviewstats_gui->GetId());
@@ -564,6 +568,55 @@ DialogRR::~DialogRR()
 {
 	// Disconnect Events
 	buttonSet->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogRR::OnSetVal ), NULL, this );
+
+}
+
+DialogPCI::DialogPCI( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxSize( 237,133 ), wxSize( 237,133 ) );
+
+	wxBoxSizer* bSizer10;
+	bSizer10 = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* bSizer12;
+	bSizer12 = new wxBoxSizer( wxVERTICAL );
+
+	m_staticText30 = new wxStaticText( this, wxID_ANY, wxT("Changes will apply on next start"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText30->Wrap( -1 );
+	bSizer12->Add( m_staticText30, 0, wxALL, 5 );
+
+
+	bSizer10->Add( bSizer12, 1, wxEXPAND|wxALL, 5 );
+
+	wxBoxSizer* bSizer11;
+	bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+	txtPciBus = new wxTextCtrl( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTER );
+	bSizer11->Add( txtPciBus, 0, wxALL, 5 );
+
+
+	bSizer11->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_btnPciAddr = new wxButton( this, wxID_ANY, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer11->Add( m_btnPciAddr, 1, wxALL, 5 );
+
+
+	bSizer10->Add( bSizer11, 0, wxALL, 5 );
+
+
+	this->SetSizer( bSizer10 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	m_btnPciAddr->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogPCI::OnSetPciBus ), NULL, this );
+}
+
+DialogPCI::~DialogPCI()
+{
+	// Disconnect Events
+	m_btnPciAddr->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogPCI::OnSetPciBus ), NULL, this );
 
 }
 

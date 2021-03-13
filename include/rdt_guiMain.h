@@ -70,6 +70,7 @@ class rdt_guiFrame: public GUIFrame
         void OnSize(wxSizeEvent& event);
         void UpdateVal(wxTimerEvent& event);
         void OnRefRate(wxCommandEvent& event);
+        void OnSetPciBus(wxCommandEvent& event);
         void OnMenuSaveExit(wxCommandEvent& event);
         void OnMenuReset(wxCommandEvent& event);
 
@@ -155,6 +156,18 @@ class GUIRefreshRate: public DialogRR
         rdt_guiFrame * rdtFrame;
 
         void OnSetVal( wxCommandEvent& event );
+};
+
+class PciBusDialog : public DialogPCI
+{
+public:
+    PciBusDialog(wxWindow *);
+    ~PciBusDialog() {}
+
+private:
+    rdt_guiFrame * rdtFrame;
+
+    void OnSetPciBus( wxCommandEvent& event );
 };
 
 class PowerWindow: public PowerFrame
