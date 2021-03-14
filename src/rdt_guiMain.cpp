@@ -61,7 +61,7 @@ void rdt_guiFrame::GetReady()
     int m_pci_bus;
     cfg->cfgRead(ConfKeyEnums::PCI_BUS, &m_pci_bus, 0);
 
-    if(!rdt->init_rdtop(m_pci_bus))
+    if(!rdt->init_rdtop((short)m_pci_bus))
     {
         this->SetRadeontopState(false);
         this->SetStatusText(_T("Radeontop not initialized!"), 0);
@@ -251,7 +251,7 @@ void rdt_guiFrame::OnRefRate(wxCommandEvent& event)
 
 void rdt_guiFrame::OnSetPciBus(wxCommandEvent& event)
 {
-    DialogPCI * m_dlg = new DialogPCI(this);
+    PciBusDialog * m_dlg = new PciBusDialog(this);
     int val;
     cfg->cfgRead(ConfKeyEnums::PCI_BUS, &val, 0);
     m_dlg->txtPciBus->SetValue(wxString::Format("%d", val));
@@ -616,6 +616,7 @@ void PciBusDialog::OnSetPciBus(wxCommandEvent& event)
 {
     int val = 0;
     val = wxAtoi(txtPciBus->GetValue());
+
     if(val < 0)
     {
         val = 0;
