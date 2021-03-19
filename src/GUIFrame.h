@@ -271,7 +271,7 @@ class DialogPCI : public wxDialog
 	private:
 
 	protected:
-		wxStaticText* m_staticText30;
+		wxStaticText* txtBusCurrent;
 		wxButton* m_btnPciAddr;
 
 		// Virtual event handlers, overide them in your derived class

@@ -581,9 +581,9 @@ DialogPCI::DialogPCI( wxWindow* parent, wxWindowID id, const wxString& title, co
 	wxBoxSizer* bSizer12;
 	bSizer12 = new wxBoxSizer( wxVERTICAL );
 
-	m_staticText30 = new wxStaticText( this, wxID_ANY, wxT("Changes will apply on next start"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText30->Wrap( -1 );
-	bSizer12->Add( m_staticText30, 0, wxALL, 5 );
+	txtBusCurrent = new wxStaticText( this, wxID_ANY, wxT("Current Bus:"), wxDefaultPosition, wxDefaultSize, 0 );
+	txtBusCurrent->Wrap( -1 );
+	bSizer12->Add( txtBusCurrent, 0, wxALL, 5 );
 
 
 	bSizer10->Add( bSizer12, 1, wxEXPAND|wxALL, 5 );

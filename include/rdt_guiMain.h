@@ -41,6 +41,7 @@ class rdt_guiFrame: public GUIFrame
         radeontop::rdtop * GetRadeonHandler() const { return this->rdt; }
         radeontop::_m_drm_version GetDrmVerInfo() const { return this->m_drm_ver; }
         bool GetRadeontopState() const { return is_radeontop_ok; }
+        int GetPciBusAddress() const { return pci_bus_current; }
         void mSetTimerVal(int, bool = false);
         int GetTimerVal() const { return this->msec; }
         void DestroyDialogWindow(void *);
@@ -51,6 +52,8 @@ class rdt_guiFrame: public GUIFrame
     private:
         class radeontop::rdtop * rdt;
         radeontop::_m_drm_version m_drm_ver;
+
+        int pci_bus_current;
 
         void SetRadeontopState(bool bState) { is_radeontop_ok = bState; }
         void SetItemsToShow();

@@ -48,23 +48,27 @@ bool rdtop::haserror() const
     return m_err;
 }
 
-bool rdtop::init_rdtop(short int pci_bus)
+bool rdtop::init_rdtop(int * pci_bus)
 {
     unsigned int pciaddr = 0;
 
-    pciaddr = init_pci(pci_bus, 0);
+    pciaddr = init_pci(*pci_bus, 0);
     if(pciaddr == 0)
     {
         pciaddr = init_pci(0,0);
 
         if(pciaddr == 0)
             pciaddr = init_pci(1,0);
+        else
+            *pci_bus = 0;
 
         if(pciaddr == 0)
         {
             printf("Can't find Radeon card\n");
             return false;
         }
+        else
+            *pci_bus = 1;
     }
 
     family = getfamily(pciaddr);
