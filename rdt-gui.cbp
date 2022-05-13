@@ -63,8 +63,8 @@
 		<Unit filename="include/conf.h" />
 		<Unit filename="include/confdef.h" />
 		<Unit filename="include/cputop.h" />
-		<Unit filename="include/pci_ids/r600_pci_ids.h" />
 		<Unit filename="include/power.h" />
+		<Unit filename="include/r600_pci_ids.h" />
 		<Unit filename="include/radeontop.h" />
 		<Unit filename="include/rdt_guiApp.h" />
 		<Unit filename="include/rdt_guiMain.h" />
@@ -84,9 +84,6 @@
 		<Unit filename="src/rdt_guiMain.cpp" />
 		<Unit filename="src/ticks.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>

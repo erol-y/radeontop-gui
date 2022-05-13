@@ -77,9 +77,11 @@ const char * const family_str[] = {
 	str(NAVI12),
 	str(SIENNA_CICHLID),
 	str(VANGOGH),
+	str(YELLOW_CARP),
 	str(NAVY_FLOUNDER),
 	str(DIMGREY_CAVEFISH),
 	str(ALDEBARAN),
+	str(CYAN_SKILLFISH),
 	str(BEIGE_GOBY)
 };
 }
